@@ -15,63 +15,52 @@ import { Chapter } from './models/chapter.model';
     RecentChaptersComponent
   ],
   template: `
-    <div class="container">
-      <app-header />
+    <div class="manga-container">
+      <div class="container-fluid">
+        <app-header />
 
-      <!-- Main Content -->
-      <main class="main-content">
-        <!-- Latest and Next Chapter Cards -->
-        <div class="chapter-cards">
-          <app-chapter-card
-            [chapterInfo]="latestChapter()"
-            cardTitle="Latest Chapter" />
+        <!-- Main Content -->
+        <main class="main-content">
+          <!-- Latest and Next Chapter Cards -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <app-chapter-card
+                [chapterInfo]="latestChapter()"
+                cardTitle="Latest Chapter" />
+            </div>
+            <div class="col-md-6">
+              <app-chapter-card
+                [chapterInfo]="nextChapter()"
+                cardTitle="Next Chapter" />
+            </div>
+          </div>
 
-          <app-chapter-card
-            [chapterInfo]="nextChapter()"
-            cardTitle="Next Chapter" />
-        </div>
+          <app-notifications-section />
 
-        <app-notifications-section />
-
-        <app-recent-chapters
-          [chapters]="chapterService.recentChapters()"
-          (chapterRead)="onChapterRead($event)" />
-      </main>
+          <app-recent-chapters
+            [chapters]="chapterService.recentChapters()"
+            (chapterRead)="onChapterRead($event)" />
+        </main>
+      </div>
     </div>
   `,
   styles: [`
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    .container {
+    .manga-container {
       min-height: 100vh;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 20px;
+      padding: 20px 0;
     }
 
     .main-content {
       max-width: 1200px;
       margin: 0 auto;
-    }
-
-    .chapter-cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 40px;
+      padding: 0 15px;
     }
 
     @media (max-width: 768px) {
-      .chapter-cards {
-        grid-template-columns: 1fr;
-      }
-
-      .container {
-        padding: 15px;
+      .manga-container {
+        padding: 15px 0;
       }
     }
   `]
