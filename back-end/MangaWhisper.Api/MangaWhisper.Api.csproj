@@ -10,4 +10,10 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MangaWhisper.Application\MangaWhisper.Application.csproj" />
+    <ProjectReference Include="..\MangaWhisper.Infrastructure\MangaWhisper.Infrastructure.csproj" />
+    <ProjectReference Include="..\MangaWhisper.Common\MangaWhisper.Common.csproj" />
+  </ItemGroup>
+
 </Project>
