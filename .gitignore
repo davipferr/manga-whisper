@@ -57,3 +57,104 @@
 # System files
 .DS_Store
 Thumbs.db
+
+# .NET / ASP.NET Core specific
+/back-end/**/bin/
+/back-end/**/obj/
+/back-end/**/*.user
+/back-end/**/*.suo
+/back-end/**/*.userprefs
+/back-end/**/*.usertasks
+/back-end/**/.vs/
+
+# Build results
+/back-end/**/[Dd]ebug/
+/back-end/**/[Dd]ebugPublic/
+/back-end/**/[Rr]elease/
+/back-end/**/[Rr]eleases/
+/back-end/**/x64/
+/back-end/**/x86/
+/back-end/**/build/
+/back-end/**/bld/
+/back-end/**/[Bb]in/
+/back-end/**/[Oo]bj/
+
+# .NET Core publish output
+/back-end/**/[Pp]ublish/
+
+# MSTest test Results
+/back-end/**/[Tt]est[Rr]esult*/
+/back-end/**/[Bb]uild[Ll]og.*
+
+# NUnit
+/back-end/**/*.VisualState.xml
+/back-end/**/TestResult.xml
+/back-end/**/nunit-*.xml
+
+# Coverage reports
+/back-end/**/coverage*.json
+/back-end/**/coverage*.xml
+/back-end/**/coverage*.info
+
+# Entity Framework
+/back-end/**/Migrations/
+
+# User-specific files
+/back-end/**/*.rsuser
+/back-end/**/*.sln.docstates
+
+# Mono auto generated files
+/back-end/**/mono_crash.*
+
+# Windows image file caches
+/back-end/**/Thumbs.db
+/back-end/**/ehthumbs.db
+
+# JetBrains Rider
+/back-end/**/.idea/
+/back-end/**/DotSettings.user
+
+# .NET Core appsettings with secrets
+/back-end/**/appsettings.*.json
+!/back-end/**/appsettings.json
+!/back-end/**/appsettings.Development.json
+
+# User secrets
+/back-end/**/secrets.json
+
+# Package files
+/back-end/**/*.snupkg
+/back-end/**/*.nupkg
+
+# StyleCop
+/back-end/**/StyleCopReport.xml
+
+# Files built by Visual Studio
+/back-end/**/*_i.c
+/back-end/**/*_p.c
+/back-end/**/*_h.h
+/back-end/**/*.ilk
+/back-end/**/*.meta
+/back-end/**/*.obj
+/back-end/**/*.iobj
+/back-end/**/*.pch
+/back-end/**/*.pdb
+/back-end/**/*.ipdb
+/back-end/**/*.pgc
+/back-end/**/*.pgd
+/back-end/**/*.rsp
+/back-end/**/*.sbr
+/back-end/**/*.tlb
+/back-end/**/*.tli
+/back-end/**/*.tlh
+/back-end/**/*.tmp
+/back-end/**/*.tmp_proj
+/back-end/**/*_wpftmp.csproj
+/back-end/**/*.log
+/back-end/**/*.tlog
+/back-end/**/*.vspscc
+/back-end/**/*.vssscc
+/back-end/**/.builds
+/back-end/**/*.pidb
+/back-end/**/*.svclog
+/back-end/**/*.scc
