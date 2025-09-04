@@ -13,7 +13,6 @@ import { ChapterInfo } from '../../models/chapter.model';
         <span class="chapter-number">Chapter {{ chapterInfo().number }}</span>
         <h3 class="chapter-title">{{ chapterInfo().title }}</h3>
         <div class="chapter-date">
-          <i class="calendar-icon">📅</i>
           {{ dateLabel() }} {{ chapterInfo().date }}
         </div>
       </div>

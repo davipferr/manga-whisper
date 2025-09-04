@@ -21,9 +21,6 @@ import { Chapter } from '../../models/chapter.model';
               <h4 class="chapter-name">{{ chapter.title }}</h4>
               <span class="chapter-date">{{ chapter.date }}</span>
             </div>
-            <div class="chapter-actions">
-              <button class="read-btn" (click)="onReadChapter(chapter)">📖</button>
-            </div>
           </div>
         }
       </div>

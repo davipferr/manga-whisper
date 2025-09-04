@@ -15,7 +15,6 @@ import { Component } from '@angular/core';
       </div>
       <div class="header-right">
         <button class="settings-btn">
-          <i class="settings-icon">⚙️</i>
           Settings
         </button>
       </div>
@@ -61,6 +60,7 @@ import { Component } from '@angular/core';
     .logo-text p {
       color: rgba(255, 255, 255, 0.8);
       font-size: 14px;
+      margin-bottom: 0;
     }
 
     .settings-btn {
