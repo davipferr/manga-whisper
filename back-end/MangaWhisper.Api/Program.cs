@@ -6,6 +6,9 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// In your Program.cs or Startup.cs
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(MangaWhisper.Application.AssemblyMarker).Assembly));
+
 // Add CORS policy
 builder.Services.AddCors(options =>
 {
