@@ -1,3 +1,9 @@
+using MangaWhisper.Infrastructure.Extensions;
+using DotNetEnv;
+
+// Load .env file if it exists (optional)
+Env.TraversePath().Load();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +14,8 @@ builder.Services.AddOpenApi();
 
 // In your Program.cs or Startup.cs
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(MangaWhisper.Application.AssemblyMarker).Assembly));
+
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
 // Add CORS policy
 builder.Services.AddCors(options =>
