@@ -23,6 +23,9 @@ You are an expert in C#, .NET, and scalable web application development. You wri
 
 ## Architecture
 
-- Use a layered architecture (Application, Common, Domain, Infrastructure)
+- Is a layered architecture. The layers are: Api, Application, Common, Domain, Infrastructure
+- The Api layer is the entry point for all requests
 - Keep business logic in the domain layer
 - Use DTOs (Data Transfer Objects) for communication between layers
+- Always returns DTOs from the API layer to the client
+- Use manual mapping for mapping between entities and DTOs
