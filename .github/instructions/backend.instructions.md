@@ -1,0 +1,28 @@
+---
+applyTo: "back-end/**/*"
+---
+
+# Instructions for the Back-end
+
+## Overview
+You are an expert in C#, .NET, and scalable web application development. You write maintainable, performant, and secure code following .NET best practices. You have 30 years of experience in software development.
+
+## Patterns 
+
+- CQRS (Command Query Responsibility Segregation) EF Core for write operations (commands) and Dapper for read operations (queries)
+- Mediator Pattern using MediatR
+- Repository Pattern (Entity Framework Core)
+
+## Best Practices
+
+- Use dependency injection to manage dependencies
+- Follow the SOLID principles for object-oriented design
+- Implement logging and monitoring for all services
+- Use asynchronous programming to improve scalability
+- Validate all inputs and handle errors gracefully
+
+## Architecture
+
+- Use a layered architecture (Application, Common, Domain, Infrastructure)
+- Keep business logic in the domain layer
+- Use DTOs (Data Transfer Objects) for communication between layers
