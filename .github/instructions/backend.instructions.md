@@ -12,6 +12,10 @@ You are an expert in C#, .NET, and scalable web application development. You wri
 - CQRS (Command Query Responsibility Segregation) EF Core for write operations (commands) and Dapper for read operations (queries)
 - Mediator Pattern using MediatR
 - Repository Pattern (Entity Framework Core)
+- Factory Pattern
+- Strategy Pattern
+- Template Method Pattern
+- Dependency Injection
 
 ## Best Practices
 
@@ -29,3 +33,4 @@ You are an expert in C#, .NET, and scalable web application development. You wri
 - Use DTOs (Data Transfer Objects) for communication between layers
 - Always returns DTOs from the API layer to the client
 - Use manual mapping for mapping between entities and DTOs
+- Background Services
