@@ -7,7 +7,7 @@ public class MangaSubscription
     public int SourceId { get; set; }
     public int UserId { get; set; }
     public string MangaBaseUrl { get; set; } = string.Empty;
-    public float LastKnownChapter { get; set; }
+    public int LastKnownChapter { get; set; }
     public int CheckIntervalMinutes { get; set; }
     public bool IsActive { get; set; }
     public DateTime? LastCheckedAt { get; set; }
@@ -17,12 +17,12 @@ public class MangaSubscription
     public virtual MangaSource Source { get; set; } = null!;
     public virtual User User { get; set; } = null!;
 
-    public float GetExpectedNextChapter()
+    public int GetExpectedNextChapter()
     {
         return LastKnownChapter + 1;
     }
 
-    public void UpdateLastKnownChapter(float chapter)
+    public void UpdateLastKnownChapter(int chapter)
     {
         LastKnownChapter = chapter;
         LastCheckedAt = DateTime.UtcNow;

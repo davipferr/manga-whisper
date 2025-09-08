@@ -97,7 +97,7 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
 
     public abstract string GetSiteName();
 
-    protected abstract string BuildChapterUrl(string baseUrl, float chapterNumber);
+    protected abstract string BuildChapterUrl(string baseUrl, int chapterNumber);
     protected abstract string GetMangaIdFromUrl(string url);
     protected abstract Chapter? CheckIfChapterExistsRules(string pageSource);
 
