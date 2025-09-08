@@ -12,12 +12,15 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.8" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.25.0" />
+    <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="129.0.6668.10000" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MangaWhisper.Application\MangaWhisper.Application.csproj" />
     <ProjectReference Include="..\MangaWhisper.Infrastructure\MangaWhisper.Infrastructure.csproj" />
     <ProjectReference Include="..\MangaWhisper.Common\MangaWhisper.Common.csproj" />
+    <ProjectReference Include="..\MangaWhisper.Domain\MangaWhisper.Domain.csproj" />
   </ItemGroup>
 
 </Project>
