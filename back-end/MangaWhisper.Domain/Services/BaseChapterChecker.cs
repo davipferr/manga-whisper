@@ -55,7 +55,8 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
                 return ChapterCheckResult.SuccessHttpOnly(true);
             }
 
-            return ChapterCheckResult.SuccessHttpOnly(false); // Chapter doesn't exist
+            // Chapter doesn't exist    
+            return ChapterCheckResult.SuccessHttpOnly(false);
         }
         catch (Exception ex)
         {
@@ -96,12 +97,10 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
 
     public abstract string GetSiteName();
 
-    // Abstract methods that must be implemented by concrete checkers
     protected abstract string BuildChapterUrl(string baseUrl, float chapterNumber);
-    protected abstract Chapter? ExtractChapterFromHtml(string html, float chapterNumber);
     protected abstract string GetMangaIdFromUrl(string url);
+    protected abstract Chapter? CheckIfChapterExistsRules(string pageSource);
 
-    // Virtual methods that can be overridden
     protected virtual async Task<HttpCheckResult> CheckChapterExistsViaHttp(string url)
     {
         try
@@ -116,14 +115,6 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 return HttpCheckResult.SuccessResult(false);
-            }
-
-            // Check if we might need Selenium (anti-bot protection, etc.)
-            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden ||
-                response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-            {
-                return HttpCheckResult.FailureResult("HTTP request blocked, may require Selenium", 
-                    (int)response.StatusCode, true);
             }
 
             return HttpCheckResult.FailureResult($"HTTP error: {response.StatusCode}", 
@@ -142,9 +133,6 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
         {
             webDriver.Navigate().GoToUrl(url);
             
-            // Handle potential anti-bot detection
-            await HandleAntiBot();
-            
             // Wait for page to load
             await Task.Delay(2000);
             
@@ -157,19 +145,13 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
                 return null;
             }
 
-            return ExtractChapterFromHtml(pageSource, 0); // Chapter number will be extracted from HTML
+            return CheckIfChapterExistsRules(pageSource);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error checking chapter via Selenium: {Url}", url);
             return null;
         }
-    }
-
-    protected virtual async Task HandleAntiBot()
-    {
-        // Default implementation - can be overridden for specific anti-bot handling
-        await Task.Delay(1000);
     }
 
     public virtual void Dispose()
