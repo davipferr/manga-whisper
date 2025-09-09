@@ -14,18 +14,16 @@ public class HttpCheckResult
         {
             Success = true,
             ChapterExists = chapterExists,
-            StatusCode = 200
         };
     }
 
-    public static HttpCheckResult FailureResult(string errorMessage, int statusCode = 0, bool requiresSelenium = false)
+    public static HttpCheckResult FailureResult(string errorMessage, int statusCode = 0)
     {
         return new HttpCheckResult
         {
             Success = false,
             ErrorMessage = errorMessage,
-            StatusCode = statusCode,
-            RequiresSelenium = requiresSelenium
+            StatusCode = statusCode
         };
     }
 }

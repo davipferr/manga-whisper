@@ -20,7 +20,32 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
         siteName = GetSiteName();
     }
 
-    public async Task<ChapterCheckResult> CheckForNewChapter(MangaSubscription subscription)
+    protected abstract string GetSiteName();
+    protected abstract Chapter ExtractNewChapterInfo();
+    protected abstract string BuildChapterUrl(string baseUrl, int chapterNumber);
+    protected abstract bool CheckChapterExistsViaSeleniumRules(string pageSource);
+
+    public async Task<Chapter?> GetNewChapter(MangaSubscription subscription)
+    {
+        try
+        {
+            var hasNewChapter = await HasNewChapter(subscription);
+
+            if (hasNewChapter)
+            {
+                return ExtractNewChapterInfo();
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error extracting new chapter info from page source");
+            return null;
+        }
+    }
+
+    private async Task<bool> HasNewChapter(MangaSubscription subscription)
     {
         try
         {
@@ -31,126 +56,83 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
 
             // Try HTTP request
             var httpResult = await CheckChapterExistsViaHttp(chapterUrl);
-            
+
             // If HTTP request failed
             if (!httpResult.Success)
             {
-                return ChapterCheckResult.Failure("HTTP request failed");
+                return false;
             }
 
             // If HTTP Is Successful but indicates Selenium is required
             if (httpResult.RequiresSelenium)
             {
-                var chapter = await CheckChapterExistsViaSelenium(chapterUrl);
-                if (chapter != null)
-                {
-                    chapter.MangaId = subscription.MangaId;
-                }
-                return ChapterCheckResult.SuccessWithChapter(chapter);
+                return await CheckChapterExistsViaSelenium(chapterUrl);
             }
 
             // If HTTP Is Successful but only need HTTP check
             if (httpResult.ChapterExists)
             {
-                return ChapterCheckResult.SuccessHttpOnly(true);
+                return true;
             }
 
-            // Chapter doesn't exist    
-            return ChapterCheckResult.SuccessHttpOnly(false);
+            // If HTTP Is Successful but chapter doesn't exist    
+            return false;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error checking for new chapter for subscription {SubscriptionId}", subscription.Id);
-            return ChapterCheckResult.Failure($"Error checking for new chapter: {ex.Message}");
-        }
-    }
-
-    public virtual bool ValidateMangaUrl(string url)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-            return false;
-
-        try
-        {
-            var uri = new Uri(url);
-            return !string.IsNullOrEmpty(GetMangaIdFromUrl(url));
-        }
-        catch
-        {
             return false;
         }
     }
 
-    public virtual async Task<MangaInfo?> ExtractMangaInfo(string url)
-    {
-        try
-        {
-            // Default implementation - can be overridden by specific checkers
-            return await Task.FromResult<MangaInfo?>(null);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error extracting manga info from URL: {Url}", url);
-            return null;
-        }
-    }
-
-    public abstract string GetSiteName();
-
-    protected abstract string BuildChapterUrl(string baseUrl, int chapterNumber);
-    protected abstract string GetMangaIdFromUrl(string url);
-    protected abstract Chapter? CheckIfChapterExistsRules(string pageSource);
-
-    protected virtual async Task<HttpCheckResult> CheckChapterExistsViaHttp(string url)
+    private async Task<HttpCheckResult> CheckChapterExistsViaHttp(string url)
     {
         try
         {
             using var response = await httpClient.GetAsync(url);
-            
+
             if (response.IsSuccessStatusCode)
             {
                 return HttpCheckResult.SuccessResult(true);
             }
-            
+
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 return HttpCheckResult.SuccessResult(false);
             }
 
-            return HttpCheckResult.FailureResult($"HTTP error: {response.StatusCode}", 
+            return HttpCheckResult.FailureResult($"HTTP error: {response.StatusCode}",
                 (int)response.StatusCode);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error checking chapter via HTTP: {Url}", url);
-            return HttpCheckResult.FailureResult($"HTTP request failed: {ex.Message}", 0, true);
+            return HttpCheckResult.FailureResult($"HTTP request failed: {ex.Message}", 0);
         }
     }
 
-    protected virtual async Task<Chapter?> CheckChapterExistsViaSelenium(string url)
+    private async Task<bool> CheckChapterExistsViaSelenium(string url)
     {
         try
         {
             webDriver.Navigate().GoToUrl(url);
-            
-            // Wait for page to load
+
             await Task.Delay(2000);
-            
+
             var pageSource = webDriver.PageSource;
-            
-            // Check if page indicates chapter doesn't exist
-            if (pageSource.Contains("404") || pageSource.Contains("not found") || 
+
+            if (pageSource.Contains("404") || pageSource.Contains("not found") ||
                 pageSource.Contains("página não encontrada"))
             {
-                return null;
+                return false;
             }
 
-            return CheckIfChapterExistsRules(pageSource);
+            return CheckChapterExistsViaSeleniumRules(pageSource);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error checking chapter via Selenium: {Url}", url);
-            return null;
+            return false;
         }
     }
 
