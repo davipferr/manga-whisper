@@ -41,11 +41,8 @@ public class TestMugiwaraController : ControllerBase
 
         try
         {
-            // Configure Chrome options for headless operation
             var chromeOptions = new ChromeOptions();
             // chromeOptions.AddArgument("--headless");
-            chromeOptions.AddArgument("--no-sandbox");
-            chromeOptions.AddArgument("--disable-dev-shm-usage");
             chromeOptions.AddArgument("--disable-gpu");
             chromeOptions.AddArgument("--window-size=1920,1080");
 

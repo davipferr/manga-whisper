@@ -12,6 +12,8 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
     protected readonly ILogger logger;
     protected readonly HttpClient httpClient;
 
+    protected virtual bool RequiresSelenium => true;
+
     protected BaseChapterChecker(IWebDriver webDriver, HttpClient httpClient, ILogger logger)
     {
         this.webDriver = webDriver;
@@ -49,34 +51,18 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
     {
         try
         {
-            logger.LogInformation($"Checking for new chapter for manga {subscription.Manga.Title} from source {subscription.Source.Name}");
-
             var expectedChapterNumber = subscription.GetExpectedNextChapter();
             var chapterUrl = BuildChapterUrl(subscription.MangaBaseUrl, expectedChapterNumber);
 
-            // Try HTTP request
-            var httpResult = await CheckChapterExistsViaHttp(chapterUrl);
-
-            // If HTTP request failed
-            if (!httpResult.Success)
+            // Check if this scraper requires Selenium
+            if (!RequiresSelenium)
             {
-                return false;
+                // Use HTTP-only check
+                var httpResult = await CheckChapterExistsViaHttp(chapterUrl);
+                return httpResult.Success && httpResult.ChapterExists;
             }
 
-            // If HTTP Is Successful but indicates Selenium is required
-            if (httpResult.RequiresSelenium)
-            {
-                return await CheckChapterExistsViaSelenium(chapterUrl);
-            }
-
-            // If HTTP Is Successful but only need HTTP check
-            if (httpResult.ChapterExists)
-            {
-                return true;
-            }
-
-            // If HTTP Is Successful but chapter doesn't exist    
-            return false;
+            return await CheckChapterExistsViaSelenium(chapterUrl);
         }
         catch (Exception ex)
         {
@@ -120,12 +106,6 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
             await Task.Delay(2000);
 
             var pageSource = webDriver.PageSource;
-
-            if (pageSource.Contains("404") || pageSource.Contains("not found") ||
-                pageSource.Contains("página não encontrada"))
-            {
-                return false;
-            }
 
             return CheckChapterExistsViaSeleniumRules(pageSource);
         }
