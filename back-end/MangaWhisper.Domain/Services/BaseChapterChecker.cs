@@ -12,7 +12,8 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
     protected readonly ILogger logger;
     protected readonly HttpClient httpClient;
 
-    protected virtual bool RequiresSelenium => true;
+    protected virtual bool RequiresSelenium => false;
+    protected abstract string chapterUrlPattern { get; }
 
     protected BaseChapterChecker(IWebDriver webDriver, HttpClient httpClient, ILogger logger)
     {
@@ -24,10 +25,10 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
 
     protected abstract string GetSiteName();
     protected abstract Chapter ExtractNewChapterInfo();
-    protected abstract string BuildChapterUrl(string baseUrl, int chapterNumber);
-    protected abstract bool CheckChapterExistsViaSeleniumRules(string pageSource);
+    protected abstract string BuildChapterUrl(int chapterNumber);
+    protected abstract bool CheckChapterExistsViaSeleniumRules(string pageSource);    
 
-    public async Task<Chapter?> GetNewChapter(MangaSubscription subscription)
+    public async Task<Chapter?> GetNewChapter(MangaChecker subscription)
     {
         try
         {
@@ -47,12 +48,12 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
         }
     }
 
-    private async Task<bool> HasNewChapter(MangaSubscription subscription)
+    private async Task<bool> HasNewChapter(MangaChecker subscription)
     {
         try
         {
             var expectedChapterNumber = subscription.GetExpectedNextChapter();
-            var chapterUrl = BuildChapterUrl(subscription.MangaBaseUrl, expectedChapterNumber);
+            var chapterUrl = BuildChapterUrl(expectedChapterNumber);
 
             // Check if this scraper requires Selenium
             if (!RequiresSelenium)
@@ -115,11 +116,12 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
             return false;
         }
     }
-
+   
     public virtual void Dispose()
     {
         try
         {
+            webDriver?.Quit();
             webDriver?.Dispose();
             httpClient?.Dispose();
         }

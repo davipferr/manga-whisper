@@ -4,6 +4,6 @@ namespace MangaWhisper.Domain.Interfaces;
 
 public interface IChapterChecker
 {
-    Task<Chapter?> GetNewChapter(MangaSubscription subscription);
+    Task<Chapter?> GetNewChapter(MangaChecker subscription);
     void Dispose();
 }

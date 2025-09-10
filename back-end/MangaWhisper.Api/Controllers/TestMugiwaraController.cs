@@ -23,20 +23,9 @@ public class TestMugiwaraController : ControllerBase
     }
 
     [HttpPost("test-chapter-check")]
-    public async Task<ActionResult<TestCheckerResponseDto>> TestChapterCheck([FromBody] TestChapterCheckRequest request)
+    public async Task<ActionResult<TestCheckerResponseDto>> TestChapterCheck()
     {
-        _logger.LogInformation("Testing chapter check for URL: {Url}, Chapter: {Chapter}", request.MangaUrl, request.ChapterNumber);
-
-        if (string.IsNullOrWhiteSpace(request.MangaUrl) || request.ChapterNumber <= 0)
-        {
-            return BadRequest(new TestCheckerResponseDto
-            {
-                Success = false,
-                ErrorMessage = "Valid URL and chapter number are required"
-            });
-        }
-
-        IWebDriver? webDriver = null;
+        IWebDriver? webDriver;
         MugiwaraOficialChecker? checker = null;
 
         try
@@ -54,14 +43,12 @@ public class TestMugiwaraController : ControllerBase
             checker = new MugiwaraOficialChecker(webDriver, _httpClient, checkerLogger);
 
             // Create a mock subscription for testing
-            var mockSubscription = new MangaSubscription
+            var mockSubscription = new MangaChecker
             {
                 Id = 1,
                 MangaId = 1,
-                MangaBaseUrl = request.MangaUrl,
-                LastKnownChapter = request.ChapterNumber - 1,
+                LastKnownChapter = 0,
                 Manga = new Manga { Id = 1, Title = "Test Manga" },
-                Source = new MangaSource { Id = 1, Name = "Mugiwara Oficial" }
             };
 
             var hasNewChapter = await checker.GetNewChapter(mockSubscription);
@@ -71,24 +58,11 @@ public class TestMugiwaraController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error testing chapter check");
-            return StatusCode(500, new TestCheckerResponseDto
-            {
-                Success = false,
-                ErrorMessage = $"Internal error: {ex.Message}"
-            });
+            return StatusCode(500);
         }
         finally
         {
-            try
-            {
-                checker?.Dispose();
-                webDriver?.Quit();
-                webDriver?.Dispose();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error disposing WebDriver resources");
-            }
+            checker?.Dispose();
         }
     }
 }

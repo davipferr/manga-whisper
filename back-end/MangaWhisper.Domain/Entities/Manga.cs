@@ -6,11 +6,13 @@ public class Manga
 {
     public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
-    public MangaStatus Status { get; set; }
     public string CoverImageUrl { get; set; } = string.Empty;
+    public MangaStatus Status { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
+    public virtual MangaChecker? MangaChecker { get; set; }
     public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
-    public virtual ICollection<MangaSubscription> Subscriptions { get; set; } = new List<MangaSubscription>();
 
     public Chapter? GetLatestChapter()
     {

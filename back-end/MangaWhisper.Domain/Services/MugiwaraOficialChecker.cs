@@ -8,7 +8,7 @@ namespace MangaWhisper.Domain.Services;
 
 public class MugiwaraOficialChecker : BaseChapterChecker
 {
-    private readonly string chapterUrlPattern = "https://mugiwarasoficial.com/manga/one-piece/capitulo-{1}/";
+    protected override string chapterUrlPattern => "https://mugiwarasoficial.com/manga/one-piece/capitulo-{1}/";
 
     public MugiwaraOficialChecker(IWebDriver webDriver, HttpClient httpClient, ILogger<MugiwaraOficialChecker> logger)
         : base(webDriver, httpClient, logger)
@@ -20,7 +20,7 @@ public class MugiwaraOficialChecker : BaseChapterChecker
         return "Mugiwara Oficial";
     }
 
-    protected override string BuildChapterUrl(string baseUrl, int chapterNumber)
+    protected override string BuildChapterUrl(int chapterNumber)
     {
         try
         {
@@ -28,7 +28,11 @@ public class MugiwaraOficialChecker : BaseChapterChecker
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error building chapter URL for manga: {BaseUrl}, chapter: {ChapterNumber}", baseUrl, chapterNumber);
+            logger.LogError(
+                ex,
+                $"Error building chapter URL for chapter: {chapterNumber}, Checker: {GetSiteName()}"
+            );
+
             return string.Empty;
         }
     }
