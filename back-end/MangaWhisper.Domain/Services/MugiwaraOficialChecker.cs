@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
-using System.Text.RegularExpressions;
 using MangaWhisper.Domain.Entities;
 using MangaWhisper.Common.Enums;
 
@@ -8,6 +7,7 @@ namespace MangaWhisper.Domain.Services;
 
 public class MugiwaraOficialChecker : BaseChapterChecker
 {
+    public override string SiteIdentifier => "mugiwara-oficial";
     protected override string chapterUrlPattern => "https://mugiwarasoficial.com/manga/one-piece/capitulo-{1}/";
 
     public MugiwaraOficialChecker(IWebDriver webDriver, HttpClient httpClient, ILogger<MugiwaraOficialChecker> logger)
@@ -28,11 +28,8 @@ public class MugiwaraOficialChecker : BaseChapterChecker
         }
         catch (Exception ex)
         {
-            logger.LogError(
-                ex,
-                $"Error building chapter URL for chapter: {chapterNumber}, Checker: {GetSiteName()}"
-            );
-
+            logger.LogError(ex, "Error building chapter URL for chapter: {ChapterNumber}, Checker: {SiteName}",
+                chapterNumber, GetSiteName());
             return string.Empty;
         }
     }
@@ -60,32 +57,6 @@ public class MugiwaraOficialChecker : BaseChapterChecker
         {
             logger.LogError(ex, "Error checking if chapter exists from page source");
             return false;
-        }
-    }
-
-    private int? ExtractLatestChapterNumber(string pageSource)
-    {
-        try
-        {
-            return null;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error extracting latest chapter number from page source");
-            return null;
-        }
-    }
-
-    private string ExtractChapterTitle(string pageSource)
-    {
-        try
-        {
-            return "Capítulo " + ExtractLatestChapterNumber(pageSource)?.ToString() ?? string.Empty;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error extracting chapter title from page source");
-            return $"Capítulo {ExtractLatestChapterNumber(pageSource)?.ToString() ?? string.Empty}";
         }
     }
 }

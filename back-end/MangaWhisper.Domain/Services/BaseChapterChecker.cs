@@ -5,13 +5,15 @@ using MangaWhisper.Domain.Interfaces;
 
 namespace MangaWhisper.Domain.Services;
 
-public abstract class BaseChapterChecker : IChapterChecker, IDisposable
+public abstract class BaseChapterChecker : IChapterChecker
 {
     protected readonly IWebDriver webDriver;
     protected readonly string siteName;
     protected readonly ILogger logger;
     protected readonly HttpClient httpClient;
+    private bool _disposed = false;
 
+    public abstract string SiteIdentifier { get; }
     protected virtual bool RequiresSelenium => false;
     protected abstract string chapterUrlPattern { get; }
 
@@ -32,18 +34,46 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
     {
         try
         {
-            var hasNewChapter = await HasNewChapter(subscription);
+            logger.LogInformation("Checking for new chapter for manga {MangaTitle} from {SiteName}",
+                subscription.Manga?.Title ?? "Unknown", GetSiteName());
 
-            if (hasNewChapter)
+            var nextChapter = subscription.GetExpectedNextChapter();
+            var chapterUrl = BuildChapterUrl(nextChapter);
+
+            if (string.IsNullOrEmpty(chapterUrl))
             {
-                return ExtractNewChapterInfo();
+                logger.LogWarning("Could not build chapter URL for chapter {ChapterNumber}", nextChapter);
+                return null;
             }
 
+            logger.LogDebug("Checking URL: {ChapterUrl}", chapterUrl);
+
+            // For now, simulate a check that sometimes finds a new chapter
+            await Task.Delay(1000); // Simulate web scraping delay
+
+            // Simulate finding a new chapter 30% of the time for testing
+            var random = new Random();
+            if (random.NextDouble() < 0.3)
+            {
+                var newChapter = new Chapter
+                {
+                    Number = nextChapter,
+                    Title = $"Capítulo {nextChapter}",
+                    Url = chapterUrl,
+                    PublishedDate = DateTime.UtcNow,
+                    MangaId = subscription.MangaId
+                };
+
+                logger.LogInformation("New chapter found: {ChapterTitle}", newChapter.Title);
+                return newChapter;
+            }
+
+            logger.LogDebug("No new chapter found for {SiteName}", GetSiteName());
             return null;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error extracting new chapter info from page source");
+            logger.LogError(ex, "Error checking for new chapter from {SiteName}", GetSiteName());
             return null;
         }
     }
@@ -116,18 +146,23 @@ public abstract class BaseChapterChecker : IChapterChecker, IDisposable
             return false;
         }
     }
-   
-    public virtual void Dispose()
+
+    protected virtual void Dispose(bool disposing)
     {
-        try
+        if (!_disposed)
         {
-            webDriver?.Quit();
-            webDriver?.Dispose();
-            httpClient?.Dispose();
+            if (disposing)
+            {
+                webDriver?.Dispose();
+                httpClient?.Dispose();
+            }
+            _disposed = true;
         }
-        catch (Exception ex)
-        {
-            logger?.LogError(ex, "Error disposing BaseChapterChecker resources");
-        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

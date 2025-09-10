@@ -31,6 +31,9 @@ You are an expert in C#, .NET, and scalable web application development. You wri
 - The Api layer is the entry point for all requests
 - Keep business logic in the domain layer
 - Use DTOs (Data Transfer Objects) for communication between layers
+
+## Other Guidelines 
+
 - Always returns DTOs from the API layer to the client
 - Use manual mapping for mapping between entities and DTOs
-- Background Services
+- The project uses Background Services

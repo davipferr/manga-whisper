@@ -13,6 +13,8 @@ public class MangaChecker
     public DateTime? LastCheckedAt { get; set; }
     public DateTime CreatedAt { get; set; }
 
+    public string SiteIdentifier { get; set; } = string.Empty;
+
     public virtual Manga Manga { get; set; } = null!;
 
     public int GetExpectedNextChapter()

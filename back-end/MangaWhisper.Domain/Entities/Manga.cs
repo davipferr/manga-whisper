@@ -11,7 +11,7 @@ public class Manga
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public virtual MangaChecker? MangaChecker { get; set; }
+    public virtual ICollection<MangaChecker> MangaChecker { get; set; } = new List<MangaChecker>();
     public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 
     public Chapter? GetLatestChapter()

@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using MangaWhisper.Domain.Services;
 using MangaWhisper.Domain.Entities;
 using MangaWhisper.Common.DTOs.Responses;
+using MangaWhisper.Common.Enums;
+using MangaWhisper.Application.Services;
 
 namespace MangaWhisper.Api.Controllers;
 
@@ -12,63 +11,153 @@ namespace MangaWhisper.Api.Controllers;
 public class TestMugiwaraController : ControllerBase
 {
     private readonly ILogger<TestMugiwaraController> _logger;
-    private readonly ILoggerFactory _loggerFactory;
-    private readonly HttpClient _httpClient;
+    private readonly IChapterCheckingService _chapterCheckingService;
 
-    public TestMugiwaraController(ILogger<TestMugiwaraController> logger, ILoggerFactory loggerFactory, IHttpClientFactory httpClientFactory)
+    public TestMugiwaraController(
+        ILogger<TestMugiwaraController> logger,
+        IChapterCheckingService chapterCheckingService)
     {
         _logger = logger;
-        _loggerFactory = loggerFactory;
-        _httpClient = httpClientFactory.CreateClient();
+        _chapterCheckingService = chapterCheckingService;
     }
 
-    [HttpPost("test-chapter-check")]
-    public async Task<ActionResult<TestCheckerResponseDto>> TestChapterCheck()
+    [HttpPost("setup-test-checkers")]
+    public async Task<ActionResult<TestCheckerResponseDto>> SetupTestCheckers()
     {
-        IWebDriver? webDriver;
-        MugiwaraOficialChecker? checker = null;
-
         try
         {
-            var chromeOptions = new ChromeOptions();
-            // chromeOptions.AddArgument("--headless");
-            chromeOptions.AddArgument("--disable-gpu");
-            chromeOptions.AddArgument("--window-size=1920,1080");
-
-            webDriver = new ChromeDriver(chromeOptions);
-            webDriver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(30);
-            webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
-            var checkerLogger = _loggerFactory.CreateLogger<MugiwaraOficialChecker>();
-            checker = new MugiwaraOficialChecker(webDriver, _httpClient, checkerLogger);
-
-            // Create a mock subscription for testing
-            var mockSubscription = new MangaChecker
+            var onePieceManga = new Manga
             {
                 Id = 1,
-                MangaId = 1,
-                LastKnownChapter = 0,
-                Manga = new Manga { Id = 1, Title = "Test Manga" },
+                Title = "One Piece",
+                Status = MangaStatus.Ongoing,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
-            var hasNewChapter = await checker.GetNewChapter(mockSubscription);
+            // Create checker for Mugiwara Oficial
+            var mugiwaraChecker = new MangaChecker
+            {
+                MangaId = onePieceManga.Id,
+                SiteIdentifier = "mugiwara-oficial",
+                CheckIntervalMinutes = 1, // Check every minute for testing
+                IsActive = true,
+                CheckerStatus = MangaCheckerStatus.Idle,
+                CreatedAt = DateTime.UtcNow,
+                LastKnownChapter = 1100,
+                Manga = onePieceManga
+            };
 
-            return Ok(hasNewChapter);
+            await _chapterCheckingService.AddCheckerAsync(mugiwaraChecker);
+
+            var response = new TestCheckerResponseDto
+            {
+                Success = true,
+                Message = "Test checkers created successfully",
+                Checkers = new List<CheckerInfoDto>
+                {
+                    new()
+                    {
+                        Id = mugiwaraChecker.Id,
+                        SiteIdentifier = mugiwaraChecker.SiteIdentifier,
+                        MangaTitle = onePieceManga.Title,
+                        Status = mugiwaraChecker.CheckerStatus.ToString(),
+                        IsActive = mugiwaraChecker.IsActive,
+                        CheckIntervalMinutes = mugiwaraChecker.CheckIntervalMinutes
+                    }
+                }
+            };
+
+            _logger.LogInformation("Test checkers setup completed successfully");
+            return Ok(response);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error testing chapter check");
-            return StatusCode(500);
-        }
-        finally
-        {
-            checker?.Dispose();
+            _logger.LogError(ex, "Error setting up test checkers");
+            return StatusCode(500, new TestCheckerResponseDto
+            {
+                Success = false,
+                Message = $"Error: {ex.Message}"
+            });
         }
     }
-}
 
-public class TestChapterCheckRequest
-{
-    public string MangaUrl { get; set; } = string.Empty;
-    public int ChapterNumber { get; set; }
+    [HttpGet("checkers-status")]
+    public async Task<ActionResult<TestCheckerResponseDto>> GetCheckersStatus()
+    {
+        try
+        {
+            var checkers = await _chapterCheckingService.GetAllCheckersAsync();
+
+            var response = new TestCheckerResponseDto
+            {
+                Success = true,
+                Message = $"Found {checkers.Count()} checkers",
+                Checkers = checkers.Select(c => new CheckerInfoDto
+                {
+                    Id = c.Id,
+                    SiteIdentifier = c.SiteIdentifier,
+                    MangaTitle = c.Manga?.Title ?? "Unknown",
+                    Status = c.CheckerStatus.ToString(),
+                    IsActive = c.IsActive,
+                    CheckIntervalMinutes = c.CheckIntervalMinutes
+                }).ToList()
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting checkers status");
+            return StatusCode(500, new TestCheckerResponseDto
+            {
+                Success = false,
+                Message = $"Error: {ex.Message}"
+            });
+        }
+    }
+
+    [HttpPost("trigger-manual-check")]
+    public async Task<ActionResult<TestCheckerResponseDto>> TriggerManualCheck()
+    {
+        try
+        {
+            var checkers = await _chapterCheckingService.GetActiveCheckersAsync();
+            
+            if (!checkers.Any())
+            {
+                return BadRequest(new TestCheckerResponseDto
+                {
+                    Success = false,
+                    Message = "No active checkers found. Use setup-test-checkers first."
+                });
+            }
+
+            foreach (var checker in checkers)
+            {
+                _logger.LogInformation("Manually triggering check for {SiteIdentifier}", checker.SiteIdentifier);
+                var newChapter = await _chapterCheckingService.CheckForNewChapterAsync(checker);
+                
+                if (newChapter != null)
+                {
+                    _logger.LogInformation("Found new chapter: {ChapterNumber}", newChapter.Number);
+                }
+            }
+
+            return Ok(new TestCheckerResponseDto
+            {
+                Success = true,
+                Message = $"Manual check triggered for {checkers.Count()} checkers"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error triggering manual check");
+            return StatusCode(500, new TestCheckerResponseDto
+            {
+                Success = false,
+                Message = $"Error: {ex.Message}"
+            });
+        }
+    }
 }
