@@ -97,9 +97,6 @@ Thumbs.db
 /back-end/**/coverage*.xml
 /back-end/**/coverage*.info
 
-# Entity Framework
-/back-end/**/Migrations/
-
 # User-specific files
 /back-end/**/*.rsuser
 /back-end/**/*.sln.docstates

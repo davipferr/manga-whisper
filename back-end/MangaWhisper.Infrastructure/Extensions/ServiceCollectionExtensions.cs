@@ -3,8 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MangaWhisper.Infrastructure.Data;
 using MangaWhisper.Domain.Factories;
-using MangaWhisper.Application.Services;
+using MangaWhisper.Domain.Repositories;
 using MangaWhisper.Infrastructure.Services;
+using MangaWhisper.Infrastructure.Repositories;
 
 namespace MangaWhisper.Infrastructure.Extensions;
 
@@ -29,6 +30,9 @@ public static class ServiceCollectionExtensions
 
         // Infrastructure specific services
         services.AddScoped<IChapterCheckerFactory, ChapterCheckerFactory>();
+        services.AddScoped<IMangaCheckerRepository, MangaCheckerRepository>();
+        services.AddScoped<IChapterRepository, ChapterRepository>();
+        services.AddScoped<IMangaRepository, MangaRepository>();
 
         // Background service
         services.AddHostedService<ChapterCheckingBackgroundService>();

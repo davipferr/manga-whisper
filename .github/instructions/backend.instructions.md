@@ -37,3 +37,4 @@ You are an expert in C#, .NET, and scalable web application development. You wri
 - Always returns DTOs from the API layer to the client
 - Use manual mapping for mapping between entities and DTOs
 - The project uses Background Services
+- The project migrations are in \back-end\MangaWhisper.Infrastructure\Data\Migrations

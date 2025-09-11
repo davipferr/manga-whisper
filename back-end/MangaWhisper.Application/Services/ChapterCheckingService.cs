@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using MangaWhisper.Domain.Entities;
 using MangaWhisper.Domain.Factories;
+using MangaWhisper.Domain.Repositories;
 using MangaWhisper.Common.Enums;
 
 namespace MangaWhisper.Application.Services;
@@ -9,21 +10,36 @@ public class ChapterCheckingService : IChapterCheckingService
 {
     private readonly IChapterCheckerFactory _checkerFactory;
     private readonly ILogger<ChapterCheckingService> _logger;
-    // Add your repository/DbContext here for data access
+    private readonly IMangaCheckerRepository _mangaCheckerRepository;
+    private readonly IChapterRepository _chapterRepository;
+    private readonly IMangaRepository _mangaRepository;
 
     public ChapterCheckingService(
         IChapterCheckerFactory checkerFactory,
-        ILogger<ChapterCheckingService> logger)
+        ILogger<ChapterCheckingService> logger,
+        IMangaCheckerRepository mangaCheckerRepository,
+        IChapterRepository chapterRepository,
+        IMangaRepository mangaRepository)
     {
         _checkerFactory = checkerFactory;
         _logger = logger;
+        _mangaCheckerRepository = mangaCheckerRepository;
+        _chapterRepository = chapterRepository;
+        _mangaRepository = mangaRepository;
     }
 
     public async Task<IEnumerable<MangaChecker>> GetActiveCheckersAsync()
     {
-        // Implement using your data access layer
-        // Return all active MangaChecker entities that should be checked
-        throw new NotImplementedException("Implement with your data access layer");
+        try
+        {
+            _logger.LogInformation("Retrieving active manga checkers");
+            return await _mangaCheckerRepository.GetActiveCheckersAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving active manga checkers");
+            throw;
+        }
     }
 
     public async Task<IEnumerable<MangaChecker>> GetAllCheckersAsync()
@@ -31,10 +47,7 @@ public class ChapterCheckingService : IChapterCheckingService
         try
         {
             _logger.LogInformation("Retrieving all manga checkers");
-            
-            // Implement using your data access layer
-            // Return all MangaChecker entities
-            throw new NotImplementedException("Implement with your data access layer");
+            return await _mangaCheckerRepository.GetAllCheckersAsync();
         }
         catch (Exception ex)
         {
@@ -48,21 +61,38 @@ public class ChapterCheckingService : IChapterCheckingService
         try
         {
             _logger.LogInformation("Adding new manga checker for manga: {MangaTitle}", checker.Manga.Title);
-            
+
             // Validate the checker
             if (checker == null)
                 throw new ArgumentNullException(nameof(checker));
-            
+
             if (string.IsNullOrWhiteSpace(checker.Manga.Title))
                 throw new ArgumentException("Manga title cannot be empty", nameof(checker));
 
-            // Implement using your data access layer
-            // Add the checker to the database
-            throw new NotImplementedException("Implement with your data access layer");
+            // Check if manga already exists
+            var existingManga = await _mangaRepository.GetByTitleAsync(checker.Manga.Title);
+
+            if (existingManga != null)
+            {
+                checker.MangaId = existingManga.Id;
+                checker.Manga = existingManga;
+            }
+            else
+            {
+                // Add new manga
+                await _mangaRepository.AddAsync(checker.Manga);
+                await _mangaRepository.SaveChangesAsync();
+            }
+
+            // Add the checker
+            await _mangaCheckerRepository.AddAsync(checker);
+            await _mangaCheckerRepository.SaveChangesAsync();
+
+            _logger.LogInformation("Successfully added manga checker with ID: {CheckerId}", checker.Id);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error adding manga checker for manga: {MangaTitle}", checker?.Manga.Title);
+            _logger.LogError(ex, "Error adding manga checker for manga: {MangaTitle}", checker?.Manga?.Title);
             throw;
         }
     }
@@ -72,7 +102,15 @@ public class ChapterCheckingService : IChapterCheckingService
         try
         {
             using var chapterChecker = _checkerFactory.CreateChecker(checker.SiteIdentifier);
-            return await chapterChecker.GetNewChapter(checker);
+            var newChapter = await chapterChecker.GetNewChapter(checker);
+
+            if (newChapter != null)
+            {
+                // Save the new chapter to database
+                await SaveNewChapterAsync(newChapter, checker);
+            }
+
+            return newChapter;
         }
         catch (Exception ex)
         {
@@ -83,7 +121,44 @@ public class ChapterCheckingService : IChapterCheckingService
 
     public async Task UpdateCheckerStatusAsync(int checkerId, MangaCheckerStatus status)
     {
-        // Implement using your data access layer
-        throw new NotImplementedException("Implement with your data access layer");
+        try
+        {
+            await _mangaCheckerRepository.UpdateStatusAsync(checkerId, status);
+            await _mangaCheckerRepository.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating checker status for checker {CheckerId}", checkerId);
+            throw;
+        }
+    }
+
+    private async Task SaveNewChapterAsync(Chapter newChapter, MangaChecker checker)
+    {
+        try
+        {
+            // Check if chapter already exists
+            var existingChapter = await _chapterRepository.GetByMangaAndNumberAsync(newChapter.MangaId, newChapter.Number);
+
+            if (existingChapter == null)
+            {
+                await _chapterRepository.AddAsync(newChapter);
+                await _chapterRepository.SaveChangesAsync();
+
+                // Update the checker's last known chapter
+                await _mangaCheckerRepository.UpdateStatusAsync(checker.Id, checker.CheckerStatus);
+                checker.LastKnownChapter = newChapter.Number;
+                await _mangaCheckerRepository.SaveChangesAsync();
+
+                _logger.LogInformation("Saved new chapter {ChapterNumber} for manga {MangaId}",
+                    newChapter.Number, newChapter.MangaId);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error saving new chapter {ChapterNumber} for manga {MangaId}",
+                newChapter.Number, newChapter.MangaId);
+            throw;
+        }
     }
 }

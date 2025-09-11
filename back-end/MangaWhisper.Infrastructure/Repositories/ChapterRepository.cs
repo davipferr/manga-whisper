@@ -1,0 +1,32 @@
+using Microsoft.EntityFrameworkCore;
+using MangaWhisper.Domain.Entities;
+using MangaWhisper.Domain.Repositories;
+using MangaWhisper.Infrastructure.Data;
+
+namespace MangaWhisper.Infrastructure.Repositories;
+
+public class ChapterRepository : IChapterRepository
+{
+    private readonly ApplicationDbContext _context;
+
+    public ChapterRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<Chapter?> GetByMangaAndNumberAsync(int mangaId, decimal number)
+    {
+        return await _context.Chapters
+            .FirstOrDefaultAsync(c => c.MangaId == mangaId && c.Number == number);
+    }
+
+    public async Task AddAsync(Chapter chapter)
+    {
+        await _context.Chapters.AddAsync(chapter);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
+}
