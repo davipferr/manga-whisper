@@ -97,24 +97,30 @@ public class ChapterCheckingService : IChapterCheckingService
         }
     }
 
-    public async Task<Chapter?> CheckForNewChapterAsync(MangaChecker checker)
+    public async Task<bool> HasNewChapterAsync(MangaChecker checker)
     {
         try
         {
-            using var chapterChecker = _checkerFactory.CreateChecker(checker.SiteIdentifier);
-            var newChapter = await chapterChecker.GetNewChapter(checker);
-
-            if (newChapter != null)
-            {
-                // Save the new chapter to database
-                await SaveNewChapterAsync(newChapter, checker);
-            }
-
-            return newChapter;
+            var chapterChecker = _checkerFactory.CreateChecker(checker.SiteIdentifier);
+            return await chapterChecker.HasNewChapterAsync(checker);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error checking for new chapter for checker {CheckerId}", checker.Id);
+            _logger.LogError(ex, "Error checking if new chapter exists for checker {CheckerId}", checker.Id);
+            return false;
+        }
+    }
+
+    public async Task<Chapter?> ExtractNewChapterInfoAsync(MangaChecker checker)
+    {
+        try
+        {
+            var chapterChecker = _checkerFactory.CreateChecker(checker.SiteIdentifier);
+            return await chapterChecker.ExtractNewChapterInfoAsync(checker);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error extracting new chapter info for checker {CheckerId}", checker.Id);
             return null;
         }
     }

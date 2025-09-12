@@ -87,7 +87,7 @@ public class TestMugiwaraController : ControllerBase
     {
         try
         {
-            var checkers = await _chapterCheckingService.GetAllCheckersAsync();
+            var checkers = await _chapterCheckingService.GetActiveCheckersAsync();
 
             var response = new TestCheckerResponseDto
             {
@@ -135,12 +135,39 @@ public class TestMugiwaraController : ControllerBase
 
             foreach (var checker in checkers)
             {
-                _logger.LogInformation("Manually triggering check for {SiteIdentifier}", checker.SiteIdentifier);
-                var newChapter = await _chapterCheckingService.CheckForNewChapterAsync(checker);
-                
-                if (newChapter != null)
+                var hasNewChapter = await _chapterCheckingService.HasNewChapterAsync(checker);
+
+                if (hasNewChapter)
                 {
-                    _logger.LogInformation("Found new chapter: {ChapterNumber}", newChapter.Number);
+                    _logger.LogDebug("New chapter detected for manga {MangaTitle}, extracting chapter information...",
+                        checker.Manga?.Title ?? "Unknown");
+
+                    // Step 2: If new chapter exists, extract the chapter information
+                    var newChapter = await _chapterCheckingService.ExtractNewChapterInfoAsync(checker);
+
+                    if (newChapter != null)
+                    {
+                        _logger.LogInformation(
+                            "New chapter found for manga {MangaTitle}: Chapter {ChapterNumber} from site {SiteIdentifier}",
+                            checker.Manga?.Title ?? "Unknown",
+                            newChapter.Number,
+                            checker.SiteIdentifier);
+
+                        // TODO: Implement these features
+                        // 1. Save the new chapter to database
+                        // 2. Send notifications (WhatsApp, email, etc.)
+                        // 3. Update the checker's LastKnownChapter
+                    }
+                    else
+                    {
+                        _logger.LogWarning("New chapter was detected but failed to extract chapter information for manga {MangaTitle} from site {SiteIdentifier}",
+                            checker.Manga?.Title ?? "Unknown", checker.SiteIdentifier);
+                    }
+                }
+                else
+                {
+                    _logger.LogDebug("No new chapter found for manga {MangaTitle} from site {SiteIdentifier}",
+                        checker.Manga?.Title ?? "Unknown", checker.SiteIdentifier);
                 }
             }
 

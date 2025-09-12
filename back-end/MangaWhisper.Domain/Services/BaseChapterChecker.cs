@@ -11,7 +11,6 @@ public abstract class BaseChapterChecker : IChapterChecker
     protected readonly string siteName;
     protected readonly ILogger logger;
     protected readonly HttpClient httpClient;
-    private bool _disposed = false;
 
     public abstract string SiteIdentifier { get; }
     protected virtual bool RequiresSelenium => false;
@@ -28,55 +27,7 @@ public abstract class BaseChapterChecker : IChapterChecker
     protected abstract string GetSiteName();
     protected abstract Chapter ExtractNewChapterInfo();
     protected abstract string BuildChapterUrl(int chapterNumber);
-    protected abstract bool CheckChapterExistsViaSeleniumRules(string pageSource);    
-
-    public async Task<Chapter?> GetNewChapter(MangaChecker subscription)
-    {
-        try
-        {
-            logger.LogInformation("Checking for new chapter for manga {MangaTitle} from {SiteName}",
-                subscription.Manga?.Title ?? "Unknown", GetSiteName());
-
-            var nextChapter = subscription.GetExpectedNextChapter();
-            var chapterUrl = BuildChapterUrl(nextChapter);
-
-            if (string.IsNullOrEmpty(chapterUrl))
-            {
-                logger.LogWarning("Could not build chapter URL for chapter {ChapterNumber}", nextChapter);
-                return null;
-            }
-
-            logger.LogDebug("Checking URL: {ChapterUrl}", chapterUrl);
-
-            // For now, simulate a check that sometimes finds a new chapter
-            await Task.Delay(1000); // Simulate web scraping delay
-
-            // Simulate finding a new chapter 30% of the time for testing
-            var random = new Random();
-            if (random.NextDouble() < 0.3)
-            {
-                var newChapter = new Chapter
-                {
-                    Number = nextChapter,
-                    Title = $"Capítulo {nextChapter}",
-                    Url = chapterUrl,
-                    PublishedDate = DateTime.UtcNow,
-                    MangaId = subscription.MangaId
-                };
-
-                logger.LogInformation("New chapter found: {ChapterTitle}", newChapter.Title);
-                return newChapter;
-            }
-
-            logger.LogDebug("No new chapter found for {SiteName}", GetSiteName());
-            return null;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error checking for new chapter from {SiteName}", GetSiteName());
-            return null;
-        }
-    }
+    protected abstract Task<bool> CheckChapterExistsViaSeleniumRules();    
 
     private async Task<bool> HasNewChapter(MangaChecker subscription)
     {
@@ -90,7 +41,7 @@ public abstract class BaseChapterChecker : IChapterChecker
             {
                 // Use HTTP-only check
                 var httpResult = await CheckChapterExistsViaHttp(chapterUrl);
-                return httpResult.Success && httpResult.ChapterExists;
+                return httpResult;
             }
 
             return await CheckChapterExistsViaSelenium(chapterUrl);
@@ -102,7 +53,7 @@ public abstract class BaseChapterChecker : IChapterChecker
         }
     }
 
-    private async Task<HttpCheckResult> CheckChapterExistsViaHttp(string url)
+    private async Task<bool> CheckChapterExistsViaHttp(string url)
     {
         try
         {
@@ -110,21 +61,20 @@ public abstract class BaseChapterChecker : IChapterChecker
 
             if (response.IsSuccessStatusCode)
             {
-                return HttpCheckResult.SuccessResult(true);
+                return true;
             }
 
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                return HttpCheckResult.SuccessResult(false);
+                return false;
             }
 
-            return HttpCheckResult.FailureResult($"HTTP error: {response.StatusCode}",
-                (int)response.StatusCode);
+            return false;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error checking chapter via HTTP: {Url}", url);
-            return HttpCheckResult.FailureResult($"HTTP request failed: {ex.Message}", 0);
+            return false;
         }
     }
 
@@ -132,13 +82,7 @@ public abstract class BaseChapterChecker : IChapterChecker
     {
         try
         {
-            webDriver.Navigate().GoToUrl(url);
-
-            await Task.Delay(2000);
-
-            var pageSource = webDriver.PageSource;
-
-            return CheckChapterExistsViaSeleniumRules(pageSource);
+            return await CheckChapterExistsViaSeleniumRules();
         }
         catch (Exception ex)
         {
@@ -147,22 +91,46 @@ public abstract class BaseChapterChecker : IChapterChecker
         }
     }
 
-    protected virtual void Dispose(bool disposing)
+    public async Task<bool> HasNewChapterAsync(MangaChecker checker)
     {
-        if (!_disposed)
-        {
-            if (disposing)
-            {
-                webDriver?.Dispose();
-                httpClient?.Dispose();
-            }
-            _disposed = true;
-        }
+        return await HasNewChapter(checker);
     }
 
-    public void Dispose()
+    public async Task<Chapter?> ExtractNewChapterInfoAsync(MangaChecker checker)
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        try
+        {
+            logger.LogInformation("Extracting chapter information for manga {MangaTitle} from {SiteName}",
+                checker.Manga?.Title ?? "Unknown", GetSiteName());
+
+            var nextChapter = checker.GetExpectedNextChapter();
+            var chapterUrl = BuildChapterUrl(nextChapter);
+
+            if (string.IsNullOrEmpty(chapterUrl))
+            {
+                logger.LogWarning("Could not build chapter URL for chapter {ChapterNumber}", nextChapter);
+                return null;
+            }
+
+            logger.LogDebug("Extracting chapter info from URL: {ChapterUrl}", chapterUrl);
+
+            // TODO: Implement actual scraping logic to extract chapter details
+            var newChapter = new Chapter
+            {
+                Number = nextChapter,
+                Title = $"Capítulo {nextChapter}",
+                Url = chapterUrl,
+                PublishedDate = DateTime.UtcNow,
+                MangaId = checker.MangaId
+            };
+
+            logger.LogInformation("Chapter information extracted: {ChapterTitle}", newChapter.Title);
+            return newChapter;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error extracting chapter information from {SiteName}", GetSiteName());
+            return null;
+        }
     }
 }

@@ -100,26 +100,37 @@ public class ChapterCheckingBackgroundService : BackgroundService
 
         await checkingService.UpdateCheckerStatusAsync(checker.Id, MangaCheckerStatus.Checking);
 
-        var newChapter = await checkingService.CheckForNewChapterAsync(checker);
+        // Step 1: First check if a new chapter exists
+        var hasNewChapter = await checkingService.HasNewChapterAsync(checker);
 
-        if (newChapter != null)
-        {
-            _logger.LogInformation(
-                "New chapter found for manga {MangaTitle}: Chapter {ChapterNumber} from site {SiteIdentifier}",
-                checker.Manga?.Title ?? "Unknown",
-                newChapter.Number,
-                checker.SiteIdentifier);
-
-            // TODO: Implement these features
-            // 1. Save the new chapter to database
-            // 2. Send notifications (WhatsApp, email, etc.)
-            // 3. Update the checker's LastKnownChapter
-        }
-        else
+        if (!hasNewChapter)
         {
             _logger.LogDebug("No new chapter found for manga {MangaTitle} from site {SiteIdentifier}",
                 checker.Manga?.Title ?? "Unknown", checker.SiteIdentifier);
         }
+
+        _logger.LogDebug("New chapter detected for manga {MangaTitle}, extracting chapter information...",
+                checker.Manga?.Title ?? "Unknown");
+
+        // Step 2: If new chapter exists, extract the chapter information
+        var newChapter = await checkingService.ExtractNewChapterInfoAsync(checker);
+
+        if (newChapter == null)
+        {
+            _logger.LogWarning("New chapter was detected but failed to extract chapter information for manga {MangaTitle} from site {SiteIdentifier}",
+                checker.Manga?.Title ?? "Unknown", checker.SiteIdentifier);
+        }
+
+        _logger.LogInformation(
+                 "New chapter found for manga {MangaTitle}: Chapter {ChapterNumber} from site {SiteIdentifier}",
+                 checker.Manga?.Title ?? "Unknown",
+                 newChapter?.Number,
+                 checker.SiteIdentifier);
+
+        // TODO: Implement these features
+        // 1. Save the new chapter to database
+        // 2. Send notifications (WhatsApp, email, etc.)
+        // 3. Update the checker's LastKnownChapter
 
         await checkingService.UpdateCheckerStatusAsync(checker.Id, MangaCheckerStatus.Idle);
     }

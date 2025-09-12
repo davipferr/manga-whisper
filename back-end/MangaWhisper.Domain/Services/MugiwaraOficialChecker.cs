@@ -47,11 +47,11 @@ public class MugiwaraOficialChecker : BaseChapterChecker
         }
     }
 
-    protected override bool CheckChapterExistsViaSeleniumRules(string pageSource)
+    protected override async Task<bool> CheckChapterExistsViaSeleniumRules()
     {
         try
         {
-            return true;
+            return await Task.FromResult(true);
         }
         catch (Exception ex)
         {
