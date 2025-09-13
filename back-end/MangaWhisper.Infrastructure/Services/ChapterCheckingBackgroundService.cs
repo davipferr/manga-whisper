@@ -95,7 +95,7 @@ public class ChapterCheckingBackgroundService : BackgroundService
         Domain.Entities.MangaChecker checker,
         CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Checking manga {MangaTitle} with site {SiteIdentifier}",
+        _logger.LogInformation("Checking manga {MangaTitle} with site {SiteIdentifier}",
             checker.Manga?.Title ?? "Unknown", checker.SiteIdentifier);
 
         await checkingService.UpdateCheckerStatusAsync(checker.Id, MangaCheckerStatus.Checking);
@@ -105,12 +105,15 @@ public class ChapterCheckingBackgroundService : BackgroundService
 
         if (!hasNewChapter)
         {
-            _logger.LogDebug("No new chapter found for manga {MangaTitle} from site {SiteIdentifier}",
+            _logger.LogInformation("No new chapter found for manga {MangaTitle} from site {SiteIdentifier}",
                 checker.Manga?.Title ?? "Unknown", checker.SiteIdentifier);
         }
 
-        _logger.LogDebug("New chapter detected for manga {MangaTitle}, extracting chapter information...",
-                checker.Manga?.Title ?? "Unknown");
+        _logger.LogInformation(
+                 "New chapter found for manga {MangaTitle}: Chapter {ChapterNumber} from site {SiteIdentifier}",
+                 checker.Manga?.Title ?? "Unknown",
+                 checker.GetExpectedNextChapter(),
+                 checker.SiteIdentifier);
 
         // Step 2: If new chapter exists, extract the chapter information
         var newChapter = await checkingService.ExtractNewChapterInfoAsync(checker);
@@ -119,13 +122,8 @@ public class ChapterCheckingBackgroundService : BackgroundService
         {
             _logger.LogWarning("New chapter was detected but failed to extract chapter information for manga {MangaTitle} from site {SiteIdentifier}",
                 checker.Manga?.Title ?? "Unknown", checker.SiteIdentifier);
+            return;
         }
-
-        _logger.LogInformation(
-                 "New chapter found for manga {MangaTitle}: Chapter {ChapterNumber} from site {SiteIdentifier}",
-                 checker.Manga?.Title ?? "Unknown",
-                 newChapter?.Number,
-                 checker.SiteIdentifier);
 
         // TODO: Implement these features
         // 1. Save the new chapter to database

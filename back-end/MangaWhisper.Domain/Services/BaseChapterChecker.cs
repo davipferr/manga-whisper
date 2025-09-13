@@ -25,9 +25,9 @@ public abstract class BaseChapterChecker : IChapterChecker
     }
 
     protected abstract string GetSiteName();
-    protected abstract Chapter ExtractNewChapterInfo();
     protected abstract string BuildChapterUrl(int chapterNumber);
-    protected abstract Task<bool> CheckChapterExistsViaSeleniumRules();   
+    protected abstract Task<bool> CheckChapterExistsViaSeleniumRules(string url);
+    protected abstract Task<Chapter?> ExtractNewChapterInfoRulesAsync(string url, int mangaId);
 
     private async Task<bool> CheckChapterExistsViaHttp(string url)
     {
@@ -58,7 +58,7 @@ public abstract class BaseChapterChecker : IChapterChecker
     {
         try
         {
-            return await CheckChapterExistsViaSeleniumRules();
+            return await CheckChapterExistsViaSeleniumRules(url);
         }
         catch (Exception ex)
         {
@@ -95,9 +95,6 @@ public abstract class BaseChapterChecker : IChapterChecker
     {
         try
         {
-            logger.LogInformation("Extracting chapter information for manga {MangaTitle} from {SiteName}",
-                checker.Manga?.Title ?? "Unknown", GetSiteName());
-
             var nextChapter = checker.GetExpectedNextChapter();
             var chapterUrl = BuildChapterUrl(nextChapter);
 
@@ -107,19 +104,14 @@ public abstract class BaseChapterChecker : IChapterChecker
                 return null;
             }
 
-            logger.LogDebug("Extracting chapter info from URL: {ChapterUrl}", chapterUrl);
+            var newChapter = await ExtractNewChapterInfoRulesAsync(chapterUrl, checker.MangaId);
 
-            // TODO: Implement actual scraping logic to extract chapter details
-            var newChapter = new Chapter
+            if (newChapter == null)
             {
-                Number = nextChapter,
-                Title = $"Capítulo {nextChapter}",
-                Url = chapterUrl,
-                PublishedDate = DateTime.UtcNow,
-                MangaId = checker.MangaId
-            };
+                logger.LogWarning("Failed to extract chapter information from {SiteName} for URL: {Url}", GetSiteName(), chapterUrl);
+                return null;
+            }
 
-            logger.LogInformation("Chapter information extracted: {ChapterTitle}", newChapter.Title);
             return newChapter;
         }
         catch (Exception ex)

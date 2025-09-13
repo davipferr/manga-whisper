@@ -26,7 +26,7 @@ public class ChapterConfiguration : IEntityTypeConfiguration<Chapter>
             .IsRequired()
             .HasMaxLength(500);
 
-        builder.Property(c => c.PublishedDate)
+        builder.Property(c => c.ExtractedAt)
             .IsRequired();
 
         builder.HasOne(c => c.Manga)
