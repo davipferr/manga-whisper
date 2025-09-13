@@ -28,7 +28,7 @@ public class ChapterCheckingBackgroundService : BackgroundService
         {
             try
             {
-                await CheckAllActiveSubscriptionsAsync(stoppingToken);
+                await CheckAllActiveCheckersAsync(stoppingToken);
             }
             catch (OperationCanceledException)
             {
@@ -53,7 +53,7 @@ public class ChapterCheckingBackgroundService : BackgroundService
         _logger.LogInformation("Chapter Checking Background Service stopped");
     }
 
-    private async Task CheckAllActiveSubscriptionsAsync(CancellationToken cancellationToken)
+    private async Task CheckAllActiveCheckersAsync(CancellationToken cancellationToken)
     {
         using var scope = _serviceProvider.CreateScope();
         var checkingService = scope.ServiceProvider.GetRequiredService<IChapterCheckingService>();

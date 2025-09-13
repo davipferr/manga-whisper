@@ -27,31 +27,7 @@ public abstract class BaseChapterChecker : IChapterChecker
     protected abstract string GetSiteName();
     protected abstract Chapter ExtractNewChapterInfo();
     protected abstract string BuildChapterUrl(int chapterNumber);
-    protected abstract Task<bool> CheckChapterExistsViaSeleniumRules();    
-
-    private async Task<bool> HasNewChapter(MangaChecker subscription)
-    {
-        try
-        {
-            var expectedChapterNumber = subscription.GetExpectedNextChapter();
-            var chapterUrl = BuildChapterUrl(expectedChapterNumber);
-
-            // Check if this scraper requires Selenium
-            if (!RequiresSelenium)
-            {
-                // Use HTTP-only check
-                var httpResult = await CheckChapterExistsViaHttp(chapterUrl);
-                return httpResult;
-            }
-
-            return await CheckChapterExistsViaSelenium(chapterUrl);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error checking for new chapter for subscription {SubscriptionId}", subscription.Id);
-            return false;
-        }
-    }
+    protected abstract Task<bool> CheckChapterExistsViaSeleniumRules();   
 
     private async Task<bool> CheckChapterExistsViaHttp(string url)
     {
@@ -93,7 +69,26 @@ public abstract class BaseChapterChecker : IChapterChecker
 
     public async Task<bool> HasNewChapterAsync(MangaChecker checker)
     {
-        return await HasNewChapter(checker);
+        try
+        {
+            var expectedChapterNumber = checker.GetExpectedNextChapter();
+            var chapterUrl = BuildChapterUrl(expectedChapterNumber);
+
+            // Check if this scraper requires Selenium
+            if (!RequiresSelenium)
+            {
+                // Use HTTP-only check
+                var httpResult = await CheckChapterExistsViaHttp(chapterUrl);
+                return httpResult;
+            }
+
+            return await CheckChapterExistsViaSelenium(chapterUrl);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking for new chapter for subscription {SubscriptionId}", checker.Id);
+            return false;
+        }
     }
 
     public async Task<Chapter?> ExtractNewChapterInfoAsync(MangaChecker checker)
