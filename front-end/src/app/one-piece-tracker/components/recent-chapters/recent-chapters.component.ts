@@ -16,18 +16,16 @@ import { Chapter } from '../../models/chapter.model';
           <div class="list-group-item px-0 py-3 border-0 border-bottom">
             <div class="d-flex justify-content-between align-items-start">
               <div class="flex-grow-1">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                  <h6 class="fw-medium text-dark bg-primary rounded px-2 py-1 mb-0">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                  <div class="chapter-title-pill">
                     Chapter {{ chapter.number }} - {{ chapter.title }}
-                  </h6>
-                  <span
-                    class="badge bg-success-subtle text-success px-2 border rounded border-success-subtle"
-                    >
+                  </div>
+                  <div class="status-pill">
                     {{ chapter.status }}
-                  </span>
+                  </div>
                 </div>
 
-                <p class="">{{ chapter.date }}</p>
+                <p class="text-muted mb-0 ms-1">{{ chapter.date }}</p>
               </div>
             </div>
           </div>
@@ -36,37 +34,7 @@ import { Chapter } from '../../models/chapter.model';
       </div>
     </div>
   `,
-  styles: [
-    `
-      .recent-chapters {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 16px;
-        padding: 30px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        max-width: 600px;
-        width: 100%;
-      }
-
-      .section-header h2 {
-        color: #333;
-        font-size: 20px;
-        font-weight: 600;
-      }
-
-      .list-group-item {
-        background-color: transparent !important;
-      }
-
-      .list-group-item:last-child {
-        border-bottom: none !important;
-      }
-
-      .btn-outline-primary:hover {
-        transform: scale(1.05);
-        transition: transform 0.2s ease;
-      }
-    `,
-  ],
+  styleUrl: './recent-chapters.component.css',
 })
 export class RecentChaptersComponent {
   chapters = input.required<Chapter[]>();

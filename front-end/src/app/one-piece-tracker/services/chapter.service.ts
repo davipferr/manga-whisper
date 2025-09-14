@@ -34,7 +34,7 @@ export class ChapterService {
       title: 'Bonney\'s Birth',
       date: '26/11/2023',
       status: 'Released',
-      statusLabel: '📍 Released'
+      statusLabel: 'Released'
     };
   }
 
@@ -44,7 +44,7 @@ export class ChapterService {
       title: 'TBA',
       date: '03/12/2023',
       status: 'Upcoming',
-      statusLabel: '📍 Upcoming'
+      statusLabel: 'Upcoming'
     };
   }
 

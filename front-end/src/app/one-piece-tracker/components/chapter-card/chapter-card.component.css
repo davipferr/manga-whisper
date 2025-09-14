@@ -1,0 +1,63 @@
+.chapter-card-container {
+  background: rgba(255, 255, 255, 0.98);
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  min-height: 280px;
+}
+
+.chapter-card-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+.status-badge-released {
+  background: linear-gradient(135deg, #dc3545, #b02a37) !important;
+  color: white !important;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.status-badge-upcoming {
+  background: linear-gradient(135deg, #fd7e14, #e8590c) !important;
+  color: white !important;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 12px rgba(253, 126, 20, 0.3);
+}
+
+.chapter-title {
+  line-height: 1.2;
+  word-wrap: break-word;
+  color: #2c3e50;
+}
+
+.card-title {
+  color: #495057;
+  letter-spacing: -0.025em;
+}
+
+.badge.bg-secondary.bg-opacity-10 {
+  background-color: rgba(108, 117, 125, 0.1) !important;
+  color: #6c757d !important;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.bi-calendar3::before {
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .chapter-card-container {
+    min-height: 240px;
+  }
+
+  .chapter-title {
+    font-size: 1.5rem !important;
+  }
+
+  .card-title {
+    font-size: 1.1rem !important;
+  }
+}
