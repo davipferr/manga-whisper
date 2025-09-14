@@ -24,8 +24,6 @@ import { Chapter } from '../../models/chapter.model';
                     {{ chapter.status }}
                   </div>
                 </div>
-
-                <p class="text-muted mb-0 ms-1">{{ chapter.date }}</p>
               </div>
             </div>
           </div>

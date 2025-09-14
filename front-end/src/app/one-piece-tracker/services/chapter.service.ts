@@ -41,10 +41,10 @@ export class ChapterService {
   getNextChapter(): ChapterInfo {
     return {
       number: 1099,
-      title: 'TBA',
+      title: 'To Be Announced',
       date: '03/12/2023',
       status: 'Upcoming',
-      statusLabel: 'Upcoming'
+      statusLabel: 'Upcoming',
     };
   }
 

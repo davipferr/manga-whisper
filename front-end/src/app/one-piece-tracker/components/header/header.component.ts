@@ -4,23 +4,15 @@ import { Component } from '@angular/core';
   selector: 'app-header',
   template: `
     <header class="header">
-      <div>
-        <div class="logo">
-          <div class="logo-icon">⚪</div>
-          <div class="logo-text">
-            <h1>One Piece Tracker</h1>
-            <p>Never miss a chapter release</p>
-          </div>
-        </div>
+      <div class="logo-text fw-semibold d-flex align-items-center flex-column">
+        <h1>One Piece Tracker</h1>
+        <p>Never miss a chapter release</p>
       </div>
     </header>
   `,
   styles: [
     `
       .header {
-        display: flex;
-        justify-content: center;
-        align-items: center;
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(20px);
         border-radius: 16px;
@@ -36,8 +28,8 @@ import { Component } from '@angular/core';
       }
 
       .logo-icon {
-        width: 40px;
-        height: 40px;
+        width: 60px;
+        height: 60px;
         background: #ff4444;
         border-radius: 8px;
         display: flex;
@@ -48,14 +40,12 @@ import { Component } from '@angular/core';
 
       .logo-text h1 {
         color: white;
-        font-size: 24px;
-        font-weight: 600;
         margin-bottom: 2px;
       }
 
       .logo-text p {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 14px;
+        color: white;
+        font-size: 20px;
         margin-bottom: 0;
       }
 
