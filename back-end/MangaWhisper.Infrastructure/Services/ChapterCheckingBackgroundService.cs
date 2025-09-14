@@ -10,7 +10,7 @@ public class ChapterCheckingBackgroundService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<ChapterCheckingBackgroundService> _logger;
-    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(5);
+    private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1);
 
     public ChapterCheckingBackgroundService(
         IServiceProvider serviceProvider,
@@ -125,10 +125,7 @@ public class ChapterCheckingBackgroundService : BackgroundService
             return;
         }
 
-        // TODO: Implement these features
-        // 1. Save the new chapter to database
-        // 2. Send notifications (WhatsApp, email, etc.)
-        // 3. Update the checker's LastKnownChapter
+        await checkingService.SaveNewChapterAsync(newChapter, checker);
 
         await checkingService.UpdateCheckerStatusAsync(checker.Id, MangaCheckerStatus.Idle);
     }

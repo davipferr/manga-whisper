@@ -62,14 +62,12 @@ public class ChapterCheckingService : IChapterCheckingService
         {
             _logger.LogInformation("Adding new manga checker for manga: {MangaTitle}", checker.Manga.Title);
 
-            // Validate the checker
             if (checker == null)
                 throw new ArgumentNullException(nameof(checker));
 
             if (string.IsNullOrWhiteSpace(checker.Manga.Title))
                 throw new ArgumentException("Manga title cannot be empty", nameof(checker));
 
-            // Check if manga already exists
             var existingManga = await _mangaRepository.GetByTitleAsync(checker.Manga.Title);
 
             if (existingManga != null)
@@ -79,12 +77,10 @@ public class ChapterCheckingService : IChapterCheckingService
             }
             else
             {
-                // Add new manga
                 await _mangaRepository.AddAsync(checker.Manga);
                 await _mangaRepository.SaveChangesAsync();
             }
 
-            // Add the checker
             await _mangaCheckerRepository.AddAsync(checker);
             await _mangaCheckerRepository.SaveChangesAsync();
 
@@ -139,26 +135,29 @@ public class ChapterCheckingService : IChapterCheckingService
         }
     }
 
-    private async Task SaveNewChapterAsync(Chapter newChapter, MangaChecker checker)
+    public async Task SaveNewChapterAsync(Chapter newChapter, MangaChecker checker)
     {
         try
         {
-            // Check if chapter already exists
             var existingChapter = await _chapterRepository.GetByMangaAndNumberAsync(newChapter.MangaId, newChapter.Number);
 
-            if (existingChapter == null)
+            if (existingChapter != null)
             {
-                await _chapterRepository.AddAsync(newChapter);
-                await _chapterRepository.SaveChangesAsync();
-
-                // Update the checker's last known chapter
-                await _mangaCheckerRepository.UpdateStatusAsync(checker.Id, checker.CheckerStatus);
-                checker.LastKnownChapter = newChapter.Number;
-                await _mangaCheckerRepository.SaveChangesAsync();
-
-                _logger.LogInformation("Saved new chapter {ChapterNumber} for manga {MangaId}",
+                _logger.LogInformation("Chapter {ChapterNumber} for manga {MangaId} already exists. Skipping save.",
                     newChapter.Number, newChapter.MangaId);
+                return;
             }
+
+            await _chapterRepository.AddAsync(newChapter);
+            await _chapterRepository.SaveChangesAsync();
+
+            checker.LastKnownChapter = newChapter.Number;
+            await _mangaCheckerRepository.UpdateStatusAsync(checker.Id, checker.CheckerStatus);
+
+            await _mangaCheckerRepository.SaveChangesAsync();
+
+            _logger.LogInformation("Saved new chapter {ChapterNumber} for manga {MangaId}",
+                newChapter.Number, newChapter.MangaId);
         }
         catch (Exception ex)
         {

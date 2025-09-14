@@ -8,6 +8,7 @@ public interface IChapterCheckingService
     Task<IEnumerable<MangaChecker>> GetActiveCheckersAsync();
     Task UpdateCheckerStatusAsync(int checkerId, MangaCheckerStatus status);
     Task AddCheckerAsync(MangaChecker checker);
+    Task SaveNewChapterAsync(Chapter newChapter, MangaChecker checker);
 
     /// <summary>
     /// Checks if a new chapter exists for the given manga checker
