@@ -2,16 +2,13 @@ import { Component, inject } from '@angular/core';
 import { ChapterService } from './services/chapter.service';
 import { HeaderComponent } from './components/header/header.component';
 import { ChapterCardComponent } from './components/chapter-card/chapter-card.component';
-import { NotificationsSectionComponent } from './components/notifications-section/notifications-section.component';
 import { RecentChaptersComponent } from './components/recent-chapters/recent-chapters.component';
-import { Chapter } from './models/chapter.model';
 
 @Component({
   selector: 'app-one-piece-tracker',
   imports: [
     HeaderComponent,
     ChapterCardComponent,
-    NotificationsSectionComponent,
     RecentChaptersComponent
   ],
   template: `
@@ -35,11 +32,8 @@ import { Chapter } from './models/chapter.model';
             </div>
           </div>
 
-          <app-notifications-section />
-
           <app-recent-chapters
-            [chapters]="chapterService.recentChapters()"
-            (chapterRead)="onChapterRead($event)" />
+            [chapters]="chapterService.recentChapters()"/>
         </main>
       </div>
     </div>
@@ -74,10 +68,5 @@ export class OnePieceTrackerComponent {
 
   nextChapter() {
     return this.chapterService.getNextChapter();
-  }
-
-  onChapterRead(chapter: Chapter): void {
-    console.log('Reading chapter:', chapter);
-    // Here you could navigate to a reading page or open a modal
   }
 }

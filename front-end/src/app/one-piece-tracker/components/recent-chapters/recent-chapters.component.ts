@@ -70,5 +70,4 @@ import { Chapter } from '../../models/chapter.model';
 })
 export class RecentChaptersComponent {
   chapters = input.required<Chapter[]>();
-  chapterRead = output<Chapter>();
 }
