@@ -46,6 +46,7 @@ export class ChapterService {
         tap(response => {
           this.isLoading.set(false);
           if (response.success) {
+            this.error.set(null);
             const chapters: Chapter[] = response.chapters.map(dto => ({
               number: dto.number,
               title: dto.title,
@@ -53,6 +54,13 @@ export class ChapterService {
             }));
             this.recentChaptersData.set(chapters);
           } else {
+            // Even if success is false, we still want to show the fallback chapters
+            const chapters: Chapter[] = response.chapters.map(dto => ({
+              number: dto.number,
+              title: dto.title,
+              date: dto.date
+            }));
+            this.recentChaptersData.set(chapters);
             this.error.set(response.errorMessage || 'Unknown error occurred');
           }
         })
