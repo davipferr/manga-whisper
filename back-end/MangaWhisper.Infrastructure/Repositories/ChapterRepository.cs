@@ -20,6 +20,13 @@ public class ChapterRepository : IChapterRepository
             .FirstOrDefaultAsync(c => c.MangaId == mangaId && c.Number == number);
     }
 
+    public async Task<IEnumerable<Chapter>> GetAllAsync()
+    {
+        return await _context.Chapters
+            .OrderByDescending(c => c.Number)
+            .ToListAsync();
+    }
+
     public async Task AddAsync(Chapter chapter)
     {
         await _context.Chapters.AddAsync(chapter);
