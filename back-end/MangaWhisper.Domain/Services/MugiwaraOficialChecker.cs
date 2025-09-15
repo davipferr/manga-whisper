@@ -94,6 +94,8 @@ public class MugiwaraOficialChecker : BaseChapterChecker
 
             var mainElement = webDriver.FindElement(By.CssSelector("div.content-area div.container div.row div.main-col"));
 
+            // This site does not provide a separate title, only chapter number in the heading.
+            // TODO: Create logic to fetch the manga title from another source if needed.
             var chapterHeadingElement = mainElement.FindElement(By.CssSelector("h1#chapter-heading"));
             var chapterTitle = chapterHeadingElement.Text.Trim();
 
