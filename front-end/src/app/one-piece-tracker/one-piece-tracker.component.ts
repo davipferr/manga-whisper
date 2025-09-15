@@ -6,11 +6,7 @@ import { RecentChaptersComponent } from './components/recent-chapters/recent-cha
 
 @Component({
   selector: 'app-one-piece-tracker',
-  imports: [
-    HeaderComponent,
-    ChapterCardComponent,
-    RecentChaptersComponent
-  ],
+  imports: [HeaderComponent, ChapterCardComponent, RecentChaptersComponent],
   template: `
     <div class="manga-container">
       <div class="container-fluid">
@@ -23,41 +19,46 @@ import { RecentChaptersComponent } from './components/recent-chapters/recent-cha
             <div class="col-md-6">
               <app-chapter-card
                 [chapterInfo]="latestChapter()"
-                cardTitle="Latest Chapter" />
+                [isLatestChapter]="true"
+                cardTitle="Latest Chapter"
+              />
             </div>
             <div class="col-md-6">
               <app-chapter-card
                 [chapterInfo]="nextChapter()"
-                cardTitle="Next Chapter" />
+                [isLatestChapter]="false"
+                cardTitle="Next Chapter"
+              />
             </div>
           </div>
 
-          <app-recent-chapters
-            [chapters]="chapterService.recentChapters()"/>
+          <app-recent-chapters [chapters]="chapterService.recentChapters()" />
         </main>
       </div>
     </div>
   `,
-  styles: [`
-    .manga-container {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 20px 0;
-    }
-
-    .main-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 15px;
-    }
-
-    @media (max-width: 768px) {
+  styles: [
+    `
       .manga-container {
-        padding: 15px 0;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        padding: 20px 0;
       }
-    }
-  `]
+
+      .main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      @media (max-width: 768px) {
+        .manga-container {
+          padding: 15px 0;
+        }
+      }
+    `,
+  ],
 })
 export class OnePieceTrackerComponent {
   chapterService = inject(ChapterService);

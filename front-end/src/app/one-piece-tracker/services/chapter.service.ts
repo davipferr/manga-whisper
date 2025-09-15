@@ -10,19 +10,16 @@ export class ChapterService {
       number: 1097,
       title: 'Ginny',
       date: '19/11/2023',
-      status: 'Released'
     },
     {
       number: 1096,
       title: 'Kumachi',
       date: '12/11/2023',
-      status: 'Released'
     },
     {
       number: 1095,
       title: 'A World Not Worth Living In',
       date: '05/11/2023',
-      status: 'Released'
     }
   ]);
 
@@ -33,8 +30,6 @@ export class ChapterService {
       number: 1098,
       title: 'Bonney\'s Birth',
       date: '26/11/2023',
-      status: 'Released',
-      statusLabel: 'Released'
     };
   }
 
@@ -43,8 +38,6 @@ export class ChapterService {
       number: 1099,
       title: 'To Be Announced',
       date: '03/12/2023',
-      status: 'Upcoming',
-      statusLabel: 'Upcoming',
     };
   }
 

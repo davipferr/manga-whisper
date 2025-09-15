@@ -12,8 +12,8 @@ import { ChapterInfo } from '../../models/chapter.model';
             {{ cardTitle() }}
           </h2>
 
-          <span class="badge rounded-pill px-3 py-2 fw-medium" [class]="statusClass()">
-            {{ chapterInfo().statusLabel }}
+          <span class="badge rounded-pill px-3 py-2 fw-medium" [class]="getStatusLabelClass()">
+            {{ getStatusLabelText() }}
           </span>
         </div>
 
@@ -46,13 +46,36 @@ import { ChapterInfo } from '../../models/chapter.model';
 export class ChapterCardComponent {
   chapterInfo = input.required<ChapterInfo>();
   cardTitle = input.required<string>();
+  isLatestChapter = input.required<boolean>();
 
-  statusClass() {
-    const status = this.chapterInfo().status.toLowerCase();
-    return `status-badge-${status}`;
+  getStatusLabelClass() {
+
+    if(this.isLatestChapter())
+    {
+      return 'status-badge-released';
+
+    }
+
+    return 'status-badge-upcoming';
+  }
+
+  getStatusLabelText() {
+
+    if(this.isLatestChapter())
+    {
+      return 'Released';
+    }
+
+    return 'Upcoming';
   }
 
   dateLabel() {
-    return this.chapterInfo().status === 'Released' ? 'Released on' : 'Expected on';
+
+    if (this.isLatestChapter())
+    {
+      return 'Released on';
+    }
+
+    return 'Expected on';
   }
 }

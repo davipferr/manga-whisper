@@ -20,9 +20,7 @@ import { Chapter } from '../../models/chapter.model';
                   <div class="chapter-title-pill">
                     Chapter {{ chapter.number }} - {{ chapter.title }}
                   </div>
-                  <div class="status-pill">
-                    {{ chapter.status }}
-                  </div>
+                  <div class="status-pill">Released</div>
                 </div>
               </div>
             </div>
