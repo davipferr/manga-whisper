@@ -1,7 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, of, tap } from 'rxjs';
-import { Chapter, ChapterInfo } from '../models/chapter.model';
+import { Chapter } from '../models/chapter.model';
 import { ChaptersListResponseDto } from '../models/api.model';
 
 @Injectable({
@@ -64,25 +64,23 @@ export class ChapterService {
     this.loadChaptersFromApi();
   }
 
-  getLatestChapter(): ChapterInfo {
+  getLatestChapter(): Chapter {
     const chapters = this.recentChaptersData();
+
     if (chapters.length > 0) {
-      const latest = chapters[0];
-      return {
-        number: latest.number,
-        title: latest.title,
-        extractedAt: latest.extractedAt,
-      };
+      return chapters[0];
     }
+
     return {
-      number: 1098,
-      title: 'Bonney\'s Birth',
-      extractedAt: '26/11/2023',
+      number: 0,
+      title: 'No latest chapter',
+      extractedAt: 'N/A',
     };
   }
 
-  getNextChapter(): ChapterInfo {
+  getNextChapter(): Chapter {
     const latest = this.getLatestChapter();
+
     return {
       number: latest.number + 1,
       title: 'To Be Announced',

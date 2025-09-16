@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { ChapterInfo } from '../../models/chapter.model';
+import { Chapter } from '../../models/chapter.model';
 
 @Component({
   selector: 'app-chapter-card',
@@ -33,7 +33,7 @@ import { ChapterInfo } from '../../models/chapter.model';
           <div>
             <div class="d-flex align-items-center text-muted">
               <span class="fs-5">
-                {{ dateLabel() }} <strong class="text-dark">{{ chapterInfo().date }}</strong>
+                {{ dateLabel() }} <strong class="text-dark">{{ chapterInfo().extractedAt }}</strong>
               </span>
             </div>
           </div>
@@ -44,7 +44,7 @@ import { ChapterInfo } from '../../models/chapter.model';
   styleUrl: './chapter-card.component.css',
 })
 export class ChapterCardComponent {
-  chapterInfo = input.required<ChapterInfo>();
+  chapterInfo = input.required<Chapter>();
   cardTitle = input.required<string>();
   isLatestChapter = input.required<boolean>();
 
