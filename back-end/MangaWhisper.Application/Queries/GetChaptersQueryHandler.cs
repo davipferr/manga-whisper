@@ -29,7 +29,7 @@ public class GetChaptersQueryHandler : IRequestHandler<GetChaptersQuery, Chapter
             {
                 Number = chapter.Number,
                 Title = chapter.Title,
-                Date = chapter.ExtractedAt.ToString("dd/MM/yyyy")
+                ExtractedAt = chapter.ExtractedAt.ToString("dd/MM/yyyy")
             }).ToList();
 
             return new ChaptersListResponseDto

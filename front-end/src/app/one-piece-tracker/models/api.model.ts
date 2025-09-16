@@ -1,7 +1,7 @@
 export interface ChapterResponseDto {
   number: number;
   title: string;
-  date: string;
+  extractedAt: string;
 }
 
 export interface ChaptersListResponseDto {

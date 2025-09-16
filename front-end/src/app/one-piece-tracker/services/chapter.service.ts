@@ -9,7 +9,7 @@ import { ChaptersListResponseDto } from '../models/api.model';
 })
 export class ChapterService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:5000/api/chapters';
+  private readonly apiUrl = 'http://localhost:5065/api/chapters';
 
   private readonly recentChaptersData = signal<Chapter[]>([]);
   private readonly isLoading = signal<boolean>(false);
@@ -39,7 +39,6 @@ export class ChapterService {
           } as ChaptersListResponseDto);
         }),
         tap(response => {
-          console.log('API Response:', response);
           this.isLoading.set(false);
 
           if (!response.success) {
@@ -52,7 +51,7 @@ export class ChapterService {
           const chapters: Chapter[] = response.chapters.map(dto => ({
             number: dto.number,
             title: dto.title,
-            date: dto.date
+            extractedAt: dto.extractedAt
           }));
 
           this.recentChaptersData.set(chapters);
@@ -72,13 +71,13 @@ export class ChapterService {
       return {
         number: latest.number,
         title: latest.title,
-        date: latest.date,
+        extractedAt: latest.extractedAt,
       };
     }
     return {
       number: 1098,
       title: 'Bonney\'s Birth',
-      date: '26/11/2023',
+      extractedAt: '26/11/2023',
     };
   }
 
@@ -87,7 +86,7 @@ export class ChapterService {
     return {
       number: latest.number + 1,
       title: 'To Be Announced',
-      date: 'TBA',
+      extractedAt: 'TBA',
     };
   }
 

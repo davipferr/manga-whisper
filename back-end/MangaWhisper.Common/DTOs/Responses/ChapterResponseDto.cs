@@ -4,7 +4,7 @@ public class ChapterResponseDto
 {
     public int Number { get; set; }
     public string Title { get; set; } = string.Empty;
-    public string Date { get; set; } = string.Empty;
+    public string ExtractedAt { get; set; } = string.Empty;
 }
 
 public class ChaptersListResponseDto
