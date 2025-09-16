@@ -12,26 +12,6 @@ import { RecentChaptersComponent } from './components/recent-chapters/recent-cha
       <div class="container-fluid">
         <app-header />
 
-        <!-- Loading State -->
-        <!-- TODO: Change this to the recent-chapters component  -->
-        @if (chapterService.loading()) {
-          <div class="loading-container text-center">
-            <div class="spinner-border text-light" role="status"></div>
-            <p class="text-light mt-2">Loading chapters from database...</p>
-          </div>
-        }
-
-        <!-- Error State -->
-        <!-- TODO: Change to alert -->
-        @if (chapterService.errorMessage()) {
-          <div class="alert alert-warning mx-auto d-flex align-items-center justify-content-around w-50" role="alert">
-            <strong>Warning:</strong> {{ chapterService.errorMessage() }}
-            <button class="btn btn-link p-0 ms-2" (click)="chapterService.reloadChapters()">
-              Retry
-            </button>
-          </div>
-        }
-
         <!-- Main Content -->
         <main class="main-content">
           <!-- Latest and Next Chapter Cards -->
@@ -70,10 +50,6 @@ import { RecentChaptersComponent } from './components/recent-chapters/recent-cha
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 15px;
-      }
-
-      .loading-container {
-        padding: 60px 0;
       }
 
       @media (max-width: 768px) {

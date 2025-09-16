@@ -15,6 +15,7 @@ export class ChapterService {
   private readonly recentChaptersData = signal<Chapter[]>([]);
   private readonly isLoading = signal<boolean>(false);
   private readonly error = signal<string | null>(null);
+  private readonly retryDelay = signal<number>(60);
 
   readonly recentChapters = this.recentChaptersData.asReadonly();
   readonly loading = this.isLoading.asReadonly();
@@ -22,6 +23,16 @@ export class ChapterService {
 
   constructor() {
     this.loadChaptersFromApi();
+  }
+
+  get retryAfter(): number {
+    return this.retryDelay();
+  }
+
+  private scheduleRetry(): void {
+    setTimeout(() => {
+      this.loadChaptersFromApi();
+    }, this.retryDelay() * 1000);
   }
 
   private loadChaptersFromApi(): void {
@@ -32,6 +43,9 @@ export class ChapterService {
       .pipe(
         catchError(error => {
           console.error('Error fetching chapters:', error);
+
+          this.retryDelay.update(delay => delay * 2);
+          this.scheduleRetry();
 
           return of({
             success: false,

@@ -56,6 +56,11 @@
  .btn-outline-primary:hover {
    transition: transform 0.2s ease;
  }
+
   .btn-outline-primary:active {
     transform: scale(0.95);
   }
+
+.loading-container {
+  padding: 60px 0;
+}
