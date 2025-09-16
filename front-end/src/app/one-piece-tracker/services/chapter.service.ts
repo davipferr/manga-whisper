@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, of, tap } from 'rxjs';
 import { Chapter } from '../models/chapter.model';
 import { ChaptersListResponseDto } from '../models/api.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChapterService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:5065/api/chapters';
+  private readonly apiUrl = `${environment.apiUrl}/chapters`;
 
   private readonly recentChaptersData = signal<Chapter[]>([]);
   private readonly isLoading = signal<boolean>(false);
