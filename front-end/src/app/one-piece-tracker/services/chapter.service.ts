@@ -16,13 +16,19 @@ export class ChapterService {
   private readonly isLoading = signal<boolean>(false);
   private readonly error = signal<string | null>(null);
   private readonly retryDelay = signal<number>(60);
+  private readonly pageSize = 5;
+
+  private readonly _currentPage = signal<number>(1);
+  private readonly _totalPages = signal<number>(1);
 
   readonly recentChapters = this.recentChaptersData.asReadonly();
   readonly loading = this.isLoading.asReadonly();
   readonly errorMessage = this.error.asReadonly();
+  readonly currentPage = this._currentPage.asReadonly();
+  readonly totalPages = this._totalPages.asReadonly();
 
   constructor() {
-    this.loadChaptersFromApi();
+    this.fetchChapters();
   }
 
   get retryAfter(): number {
@@ -31,18 +37,20 @@ export class ChapterService {
 
   private scheduleRetry(): void {
     setTimeout(() => {
-      this.loadChaptersFromApi();
+      this.fetchChapters();
     }, this.retryDelay() * 1000);
   }
 
-  private loadChaptersFromApi(): void {
+  private fetchChapters(page: number = 1): void {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.http.get<ChaptersListResponseDto>(this.apiUrl)
+    this.http.get<ChaptersListResponseDto>(`${this.apiUrl}?page=${page}&pageSize=${this.pageSize}`)
       .pipe(
         catchError(error => {
           console.error('Error fetching chapters:', error);
+
+          this.error.set('Failed to fetch chapters.');
 
           this.retryDelay.update(delay => delay * 2);
           this.scheduleRetry();
@@ -50,7 +58,8 @@ export class ChapterService {
           return of({
             success: false,
             chapters: [],
-            errorMessage: 'There was an error fetching the chapters.'
+            errorMessage: 'Failed to fetch chapters.',
+            totalChapters: 0
           } as ChaptersListResponseDto);
         }),
         tap(response => {
@@ -63,20 +72,27 @@ export class ChapterService {
 
           this.error.set(null);
 
-          const chapters: Chapter[] = response.chapters.map(dto => ({
+          this.recentChaptersData.set(response.chapters.map(dto => ({
             number: dto.number,
             title: dto.title,
             extractedAt: dto.extractedAt
-          }));
+          })));
 
-          this.recentChaptersData.set(chapters);
+          this._currentPage.set(page);
+          this._totalPages.set(Math.ceil(response.totalChapters / this.pageSize));
         })
       )
       .subscribe();
   }
 
-  reloadChapters(): void {
-    this.loadChaptersFromApi();
+  nextPage(): void {
+    this.fetchChapters(this._currentPage() + 1);
+  }
+
+  previousPage(): void {
+    if (this._currentPage() > 1) {
+      this.fetchChapters(this._currentPage() - 1);
+    }
   }
 
   getLatestChapter(): Chapter {

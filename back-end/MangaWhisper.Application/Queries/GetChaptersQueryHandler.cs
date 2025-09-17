@@ -23,8 +23,10 @@ public class GetChaptersQueryHandler : IRequestHandler<GetChaptersQuery, Chapter
     {
         try
         {
-            var chapters = await _chapterRepository.GetAllAsync();
+            var chapters = await _chapterRepository.GetPaginatedAsync(request.Page, request.PageSize);
             
+            var totalChapters = await _chapterRepository.GetTotalCountAsync();
+
             var chapterDtos = chapters.Select(chapter => new ChapterResponseDto
             {
                 Number = chapter.Number,
@@ -35,7 +37,8 @@ public class GetChaptersQueryHandler : IRequestHandler<GetChaptersQuery, Chapter
             return new ChaptersListResponseDto
             {
                 Chapters = chapterDtos,
-                Success = true
+                Success = true,
+                TotalChapters = totalChapters
             };
         }
         catch (Exception ex)

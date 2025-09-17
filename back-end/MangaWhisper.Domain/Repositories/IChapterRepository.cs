@@ -8,4 +8,6 @@ public interface IChapterRepository
     Task<IEnumerable<Chapter>> GetAllAsync();
     Task AddAsync(Chapter chapter);
     Task SaveChangesAsync();
+    Task<IEnumerable<Chapter>> GetPaginatedAsync(int page, int pageSize);
+    Task<int> GetTotalCountAsync();
 }

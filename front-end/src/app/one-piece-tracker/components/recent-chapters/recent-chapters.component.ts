@@ -52,6 +52,17 @@ import { ChapterService } from '../../services/chapter.service';
             }
           </div>
         }
+
+        <!-- Pagination Controls -->
+        <div class="pagination-controls text-center mt-4">
+          <button class="btn btn-primary me-2" (click)="chapterService.previousPage()" [disabled]="chapterService.currentPage() === 1">
+            Previous
+          </button>
+          <span>Page {{ chapterService.currentPage() }}</span>
+          <button class="btn btn-primary ms-2" (click)="chapterService.nextPage()" [disabled]="chapterService.currentPage() === chapterService.totalPages()">
+            Next
+          </button>
+        </div>
       </div>
     </div>
   `,

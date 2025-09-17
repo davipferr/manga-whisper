@@ -19,17 +19,23 @@ public class ChaptersController : ControllerBase
     }
 
     /// <summary>
-    /// Get all chapters from the database
+    /// Get paginated chapters from the database
     /// </summary>
-    /// <returns>List of chapters</returns>
+    /// <param name="page">The page number (default is 1)</param>
+    /// <param name="pageSize">The number of items per page (default is 5)</param>
+    /// <returns>Paginated list of chapters</returns>
     [HttpGet]
-    public async Task<ActionResult<ChaptersListResponseDto>> GetChapters()
+    public async Task<ActionResult<ChaptersListResponseDto>> GetChapters(int page = 1, int pageSize = 5)
     {
         try
         {
-            var query = new GetChaptersQuery();
+            var query = new GetChaptersQuery
+            {
+                Page = page,
+                PageSize = pageSize
+            };
             var result = await _mediator.Send(query);
-            
+
             if (!result.Success)
             {
                 _logger.LogWarning("Failed to retrieve chapters: {ErrorMessage}", result.ErrorMessage);

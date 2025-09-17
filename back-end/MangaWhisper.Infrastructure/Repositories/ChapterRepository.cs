@@ -27,6 +27,15 @@ public class ChapterRepository : IChapterRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Chapter>> GetPaginatedAsync(int page, int pageSize)
+    {
+        return await _context.Chapters
+            .OrderByDescending(c => c.Number)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
     public async Task AddAsync(Chapter chapter)
     {
         await _context.Chapters.AddAsync(chapter);
@@ -35,5 +44,10 @@ public class ChapterRepository : IChapterRepository
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<int> GetTotalCountAsync()
+    {
+        return await _context.Chapters.CountAsync();
     }
 }

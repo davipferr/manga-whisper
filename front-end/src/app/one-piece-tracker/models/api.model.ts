@@ -8,4 +8,5 @@ export interface ChaptersListResponseDto {
   chapters: ChapterResponseDto[];
   success: boolean;
   errorMessage?: string;
+  totalChapters: number;
 }
