@@ -82,6 +82,7 @@ Thumbs.db
 
 # .NET Core publish output
 /back-end/**/[Pp]ublish/
+/[Pp]ublish/
 
 # MSTest test Results
 /back-end/**/[Tt]est[Rr]esult*/
