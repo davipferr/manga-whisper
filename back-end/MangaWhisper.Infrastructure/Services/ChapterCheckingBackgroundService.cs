@@ -10,7 +10,7 @@ public class ChapterCheckingBackgroundService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<ChapterCheckingBackgroundService> _logger;
-    private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1);
+    private readonly TimeSpan _checkInterval = TimeSpan.FromHours(4);
 
     public ChapterCheckingBackgroundService(
         IServiceProvider serviceProvider,

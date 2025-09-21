@@ -12,13 +12,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
-// Add CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngularApp",
+    options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200")
+            policy.WithOrigins(
+                    "http://localhost:4200",
+                    "https://manga-whisper-production.web.app"
+                )
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -34,7 +36,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.UseCors("AllowAngularApp");
+    app.UseCors("AllowSpecificOrigins");
+}
+else
+{
+    app.UseCors("AllowSpecificOrigins");
 }
 
 app.UseHttpsRedirection();
