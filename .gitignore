@@ -13,9 +13,6 @@
 /front-end/package-lock.json
 /front-end/yarn.lock
 
-# Environment files
-/back-end/**/appsettings.Development.json
-
 # Angular CLI and build artefacts
 /front-end/.angular-cli.json
 /front-end/.ng/
@@ -113,9 +110,7 @@ Thumbs.db
 /back-end/**/DotSettings.user
 
 # .NET Core appsettings with secrets
-/back-end/**/appsettings.*.json
-!/back-end/**/appsettings.json
-!/back-end/**/appsettings.Development.json
+/back-end/**/appsettings.Development.json
 
 # User secrets
 /back-end/**/secrets.json
