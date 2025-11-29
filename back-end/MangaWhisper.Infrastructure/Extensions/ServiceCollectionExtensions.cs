@@ -13,9 +13,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Get connection string from .env file
-        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-                              ?? throw new InvalidOperationException("Database connection string not found. Configure it in your .env");
+        // Get connection string from configuration (appsettings.json or Azure App Settings)
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+                              ?? throw new InvalidOperationException("Database connection string 'DefaultConnection' not found in configuration.");
 
         // Entity Framework DbContext for write operations (Commands)
         services.AddDbContext<ApplicationDbContext>(options =>
