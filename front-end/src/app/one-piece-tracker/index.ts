@@ -5,7 +5,7 @@ export * from './models/chapter.model';
 export * from './services/chapter.service';
 
 // Components
-export * from './components/header/header.component';
+export * from '../shared/components/header/header';
 export * from './components/chapter-card/chapter-card.component';
 export * from './components/recent-chapters/recent-chapters.component';
 export * from './one-piece-tracker.component';

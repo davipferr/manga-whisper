@@ -1,17 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { ChapterService } from './services/chapter.service';
-import { HeaderComponent } from './components/header/header.component';
 import { ChapterCardComponent } from './components/chapter-card/chapter-card.component';
 import { RecentChaptersComponent } from './components/recent-chapters/recent-chapters.component';
 
 @Component({
   selector: 'app-one-piece-tracker',
-  imports: [HeaderComponent, ChapterCardComponent, RecentChaptersComponent],
+  imports: [ChapterCardComponent, RecentChaptersComponent],
   template: `
     <div class="manga-container">
       <div class="container-fluid">
-        <app-header />
-
         <!-- Main Content -->
         <main class="main-content">
           <!-- Latest and Next Chapter Cards -->
@@ -39,23 +36,10 @@ import { RecentChaptersComponent } from './components/recent-chapters/recent-cha
   `,
   styles: [
     `
-      .manga-container {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        padding: 20px 0;
-      }
-
       .main-content {
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 15px;
-      }
-
-      @media (max-width: 768px) {
-        .manga-container {
-          padding: 15px 0;
-        }
       }
     `,
   ],

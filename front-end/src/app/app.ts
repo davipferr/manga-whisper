@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
-import { OnePieceTrackerComponent } from './one-piece-tracker/one-piece-tracker.component';
+import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './shared/components/header/header';
 
 @Component({
   selector: 'app-root',
-  imports: [OnePieceTrackerComponent],
-  template: '<app-one-piece-tracker></app-one-piece-tracker>',
+  imports: [RouterOutlet, HeaderComponent],
+  templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {

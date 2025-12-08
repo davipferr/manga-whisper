@@ -1,0 +1,7 @@
+/* Esse componente é ViewEncapsulation.None, cuidado ao adicionar estilos aqui */
+
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
