@@ -105,4 +105,31 @@ public class AuthController : ControllerBase
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    [HttpPost("check-role")]
+    public async Task<ActionResult<RoleCheckResponseDto>> CheckRole([FromBody] RoleCheckRequestDto request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+        {
+            return Ok(new RoleCheckResponseDto
+            {
+                HasRole = false,
+                Message = "User not found."
+            });
+        }
+
+        var isInRole = await _userManager.IsInRoleAsync(user, request.RoleName.ToUpper());
+
+        return Ok(new RoleCheckResponseDto
+        {
+            HasRole = isInRole,
+            Message = isInRole ? $"User has {request.RoleName} role." : $"User does not have {request.RoleName} role."
+        });
+    }
 }

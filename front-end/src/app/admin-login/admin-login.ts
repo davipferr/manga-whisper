@@ -1,5 +1,8 @@
 import { Component, ViewEncapsulation, inject } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule } from "@angular/forms";
+import { AdminLoginService } from "./admin-login.service";
+import { LoginRequestDto, LoginResponseDto, UnauthorizedResponseDto  } from './admin-login.model';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'admin-login',
@@ -10,17 +13,36 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule }
 })
 export class AdminLoginComponent {
   private readonly formBuilder = inject(UntypedFormBuilder);
+  private readonly adminLoginService = inject(AdminLoginService);
+  private readonly router = inject(Router);
 
   loginForm: UntypedFormGroup = this.formBuilder.group({
-    username: ['', Validators.required],
+    email: ['', Validators.required],
     password: ['', Validators.required]
   });
 
   onLogin(): void {
-    if (this.loginForm.valid) {
-      const { username, password } = this.loginForm.value;
-      console.log('Login attempt:', { username, password });
-
+    if (!this.loginForm.valid) {
+      return;
     }
+
+    const { email, password } = this.loginForm.value;
+
+    const loginRequest: LoginRequestDto = {
+      email,
+      password
+    };
+
+    this.adminLoginService.login(loginRequest).subscribe({
+      next: (response: LoginResponseDto) => {
+        localStorage.setItem('adminToken', response.token);
+        localStorage.setItem('email', response.email);
+
+        this.router.navigate(['/admin-panel']);
+      },
+      error: (error: UnauthorizedResponseDto) => {
+        console.error('Login failed:', error.message);
+      }
+    });
   }
 }
