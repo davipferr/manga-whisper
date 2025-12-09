@@ -112,6 +112,9 @@ Thumbs.db
 # .NET Core appsettings with secrets
 /back-end/**/appsettings.Development.json
 
+# .env files
+/back-end/**/.env
+
 # User secrets
 /back-end/**/secrets.json
 

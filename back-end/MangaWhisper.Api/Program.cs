@@ -1,5 +1,6 @@
 using MangaWhisper.Infrastructure.Extensions;
 using MangaWhisper.Application.Extensions;
+using MangaWhisper.Infrastructure.Data;
 using DotNetEnv;
 
 // Load .env file
@@ -32,6 +33,12 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 
+// Seed database with admin user
+using (var scope = app.Services.CreateScope())
+{
+    await DatabaseSeeder.SeedAsync(scope.ServiceProvider);
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -44,6 +51,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
