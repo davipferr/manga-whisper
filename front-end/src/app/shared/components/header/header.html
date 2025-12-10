@@ -1,12 +1,13 @@
 <header class="header logo-text fw-semibold container">
   <div class="row">
     <div class="col d-flex flex-column align-items-center">
-      <h1>Manga Whisper</h1>
+      <h1>{{ title() }}</h1>
       <p>Never miss a chapter release</p>
     </div>
-    <div class="col-4 d-flex align-items-center gap-3 justify-content-end">
-      <p>Welcome, @Admin!</p>
-      <img src="assets/default-account.png" alt="Admin Avatar" width="40" height="40" class="rounded-circle"/>
-    </div>
+    @if (isAdmin()) {
+      <div class="col-4 d-flex align-items-center gap-3 justify-content-end">
+        <p>Welcome, @{{ adminName() }}!</p>
+      </div>
+    }
   </div>
 </header>

@@ -3,6 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule }
 import { AdminLoginService } from "./admin-login.service";
 import { LoginRequestDto, LoginResponseDto, UnauthorizedResponseDto  } from './admin-login.model';
 import { Router } from "@angular/router";
+import { AuthService } from "../shared/core/auth.service";
 
 @Component({
   selector: 'admin-login',
@@ -14,6 +15,7 @@ import { Router } from "@angular/router";
 export class AdminLoginComponent {
   private readonly formBuilder = inject(UntypedFormBuilder);
   private readonly adminLoginService = inject(AdminLoginService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   loginForm: UntypedFormGroup = this.formBuilder.group({
@@ -35,9 +37,7 @@ export class AdminLoginComponent {
 
     this.adminLoginService.login(loginRequest).subscribe({
       next: (response: LoginResponseDto) => {
-        localStorage.setItem('adminToken', response.token);
-        localStorage.setItem('email', response.email);
-
+        this.authService.saveAuthData(response);
         this.router.navigate(['/admin-panel']);
       },
       error: (error: UnauthorizedResponseDto) => {

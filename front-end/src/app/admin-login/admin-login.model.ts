@@ -7,7 +7,8 @@ export interface LoginResponseDto {
   token: string;
   email: string;
   fullName: string | null;
-  expiresAt: Date
+  expiresAt: Date;
+  roles: string[];
 }
 
 export interface UnauthorizedResponseDto {

@@ -55,13 +55,15 @@ public class AuthController : ControllerBase
 
         var token = await GenerateJwtToken(user);
         var expiresAt = DateTime.UtcNow.AddHours(24);
+        var userRoles = await _userManager.GetRolesAsync(user);
 
         return Ok(new LoginResponseDto
         {
             Token = token,
             Email = user.Email!,
             FullName = user.FullName,
-            ExpiresAt = expiresAt
+            ExpiresAt = expiresAt,
+            Roles = userRoles.ToList()
         });
     }
 
@@ -104,32 +106,5 @@ public class AuthController : ControllerBase
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
-    [HttpPost("check-role")]
-    public async Task<ActionResult<RoleCheckResponseDto>> CheckRole([FromBody] RoleCheckRequestDto request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user == null)
-        {
-            return Ok(new RoleCheckResponseDto
-            {
-                HasRole = false,
-                Message = "User not found."
-            });
-        }
-
-        var isInRole = await _userManager.IsInRoleAsync(user, request.RoleName.ToUpper());
-
-        return Ok(new RoleCheckResponseDto
-        {
-            HasRole = isInRole,
-            Message = isInRole ? $"User has {request.RoleName} role." : $"User does not have {request.RoleName} role."
-        });
     }
 }
