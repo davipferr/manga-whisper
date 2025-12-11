@@ -1,66 +1,71 @@
- .recent-chapters {
-   background: rgba(255, 255, 255, 0.95);
-   border-radius: 16px;
-   padding: 30px;
-   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-   max-width: 600px;
-   width: 100%;
- }
+.recent-chapters {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+}
 
- .section-header h2 {
-   color: #333;
-   font-size: 20px;
-   font-weight: 600;
- }
+.section-header h2 {
+  color: #333;
+  font-size: 20px;
+  font-weight: 600;
+}
 
- .list-group-item {
-   background-color: transparent !important;
- }
+.list-group-item {
+  background-color: transparent !important;
+}
 
- .list-group-item:last-child {
-   border-bottom: none !important;
- }
+.list-group-item:last-child {
+  border-bottom: none !important;
+}
 
- .chapter-title-pill {
-   background: linear-gradient(135deg, #007bff, #0056b3);
-   color: white;
-   padding: 8px 16px;
-   border-radius: 50px;
-   font-weight: 500;
-   font-size: 14px;
-   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-   transition: all 0.3s ease;
- }
+.chapter-title-pill {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  transition: all 0.3s ease;
+}
 
- .chapter-title-pill:hover {
-   box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
- }
+.chapter-title-pill:hover {
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+}
 
- .status-pill {
-   background: linear-gradient(135deg, #28a745, #1e7e34);
-   color: white;
-   padding: 8px 16px;
-   border-radius: 50px;
-   font-weight: 500;
-   font-size: 14px;
-   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-   transition: all 0.3s ease;
-   min-width: 80px;
-   text-align: center;
- }
+.status-pill {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  transition: all 0.3s ease;
+  min-width: 80px;
+  text-align: center;
+}
 
- .status-pill:hover {
-   box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
- }
+.status-pill:hover {
+  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+}
 
- .btn-outline-primary:hover {
-   transition: transform 0.2s ease;
- }
+.btn-outline-primary:hover {
+  transition: transform 0.2s ease;
+}
 
-  .btn-outline-primary:active {
-    transform: scale(0.95);
-  }
+.btn-outline-primary:active {
+  transform: scale(0.95);
+}
 
 .loading-container {
   padding: 60px 0;
+}
+
+.list-group-min-height {
+  min-height: 260px;
+  min-width: 260px;
 }

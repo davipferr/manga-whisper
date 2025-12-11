@@ -35,14 +35,14 @@ import { ChapterService } from '../../services/chapter.service';
 
         <!-- Chapters List -->
         @if (!chapterService.loading() && !chapterService.errorMessage()) {
-          <div class="list-group list-group-flush">
+          <div class="list-group list-group-flush list-group-min-height">
             @for (chapter of chapters(); track chapter.number) {
               <div class="list-group-item px-0 py-3 border-0 border-bottom">
                 <div class="d-flex justify-content-between align-items-start">
                   <div class="flex-grow-1">
                     <div class="d-flex align-items-center gap-3 mb-3">
                       <div class="chapter-title-pill">
-                        Chapter {{ chapter.number }} - {{ chapter.title }}
+                        Chapter {{ chapter.number }} - {{ chapter.title ? chapter.title : 'No Title' }}
                       </div>
                       <div class="status-pill">Released</div>
                     </div>
@@ -55,13 +55,18 @@ import { ChapterService } from '../../services/chapter.service';
 
         <!-- Pagination Controls -->
         <div class="pagination-controls text-center mt-4">
-          <button class="btn btn-primary me-2 w-25" (click)="chapterService.previousPage()" [disabled]="chapterService.currentPage() === 1">
-            Previous
-          </button>
-          <span>Page {{ chapterService.currentPage() }}</span>
-          <button class="btn btn-primary ms-2 w-25" (click)="chapterService.nextPage()" [disabled]="chapterService.currentPage() === chapterService.totalPages() || chapterService.totalPages() === 0">
-            Next
-          </button>
+          <div>
+            <button class="btn btn-primary me-2 w-25" (click)="chapterService.previousPage()" [disabled]="chapterService.currentPage() === 1">
+              Previous
+            </button>
+            <span class="fs-6 fw-bold">Page {{ chapterService.currentPage() }}</span>
+            <button class="btn btn-primary ms-2 w-25" (click)="chapterService.nextPage()" [disabled]="chapterService.currentPage() === chapterService.totalPages() || chapterService.totalPages() === 0">
+              Next
+            </button>
+          </div>
+          <div class="mt-2 fw-bold fs-5">
+            <span> Total Pages: {{ chapterService.totalPages() }} </span>
+          </div>
         </div>
       </div>
     </div>
@@ -71,4 +76,10 @@ import { ChapterService } from '../../services/chapter.service';
 export class RecentChaptersComponent {
   chapters = input<Chapter[]>([]);
   public chapterService = inject(ChapterService);
+
+  ngOnInit(): void {
+    this.chapterService.setPageSize(3);
+    this.chapterService.fetchChapters();
+  }
+
 }

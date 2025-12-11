@@ -24,4 +24,10 @@ public interface IChapterCheckingService
     /// <param name="checker">The manga checker to extract chapter info from</param>
     /// <returns>The new chapter information or null if extraction fails</returns>
     Task<Chapter?> ExtractNewChapterInfoAsync(MangaChecker checker);
+
+    /// <summary>
+    /// Manually triggers a check for all active checkers
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
+    Task CheckAllActiveCheckersManuallyAsync(CancellationToken cancellationToken = default);
 }

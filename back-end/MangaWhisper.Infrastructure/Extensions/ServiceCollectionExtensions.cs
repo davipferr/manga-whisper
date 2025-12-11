@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Get connection string from configuration (appsettings.json or Azure App Settings)
+        // Get connection string from configuration (.env or Azure App Services Environment Variables)
         var connectionString = Environment.GetEnvironmentVariable("DefaultConnection")
                               ?? throw new InvalidOperationException("Database connection string 'DefaultConnection' not found in configuration.");
 
@@ -71,7 +71,8 @@ public static class ServiceCollectionExtensions
                 ValidIssuer = jwtIssuer,
                 ValidAudience = jwtAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+                RoleClaimType = System.Security.Claims.ClaimTypes.Role
             };
         });
 

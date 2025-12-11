@@ -1,7 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using MangaWhisper.Application.Commands;
 using MangaWhisper.Application.Queries;
 using MangaWhisper.Common.DTOs.Responses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MangaWhisper.Api.Controllers;
 
@@ -17,7 +19,7 @@ public class ChaptersController : ControllerBase
         _mediator = mediator;
         _logger = logger;
     }
-
+    
     /// <summary>
     /// Get paginated chapters from the database
     /// </summary>
@@ -48,6 +50,34 @@ public class ChaptersController : ControllerBase
         {
             _logger.LogError(ex, "Unexpected error occurred while retrieving chapters");
             return StatusCode(500, new ChaptersListResponseDto
+            {
+                Success = false,
+                ErrorMessage = "An unexpected error occurred"
+            });
+        }
+    }
+
+    [Authorize(Roles = "ADMIN")]
+    [HttpPost("check-now")]
+    public async Task<ActionResult<ManualCheckResponseDto>> TriggerManualCheck()
+    {
+        try
+        {
+            var command = new TriggerManualChapterCheckCommand();
+            var result = await _mediator.Send(command);
+
+            if (!result.Success)
+            {
+                _logger.LogWarning("Manual chapter check failed: {ErrorMessage}", result.ErrorMessage);
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error occurred during manual chapter check");
+            return StatusCode(500, new ManualCheckResponseDto
             {
                 Success = false,
                 ErrorMessage = "An unexpected error occurred"

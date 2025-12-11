@@ -16,7 +16,6 @@ export class ChapterService {
   private readonly isLoading = signal<boolean>(false);
   private readonly error = signal<string | null>(null);
   private readonly retryDelay = signal<number>(60);
-  private readonly pageSize = 5;
 
   private readonly _currentPage = signal<number>(1);
   private readonly _totalPages = signal<number>(1);
@@ -27,9 +26,7 @@ export class ChapterService {
   readonly currentPage = this._currentPage.asReadonly();
   readonly totalPages = this._totalPages.asReadonly();
 
-  constructor() {
-    this.fetchChapters();
-  }
+  private pageSize = 5;
 
   get retryAfter(): number {
     return this.retryDelay();
@@ -41,7 +38,11 @@ export class ChapterService {
     }, this.retryDelay() * 1000);
   }
 
-  private fetchChapters(page: number = 1): void {
+  setPageSize(size: number): void {
+    this.pageSize = size;
+  }
+
+  fetchChapters(page: number = 1): void {
     this.isLoading.set(true);
     this.error.set(null);
 

@@ -1,5 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { Observable } from 'rxjs';
 import { LoginResponseDto } from '../../admin-login/admin-login.model';
+import { AuthApiService } from './auth-api.service';
 
 interface DecodedToken {
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier': string;
@@ -17,11 +19,12 @@ interface DecodedToken {
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly authApi = inject(AuthApiService);
+
   private readonly tokenKey = 'adminToken';
   private readonly userDataKey = 'userData';
 
   private readonly _userData = signal<LoginResponseDto | null>(this.loadUserData());
-
   readonly userData = this._userData.asReadonly();
   readonly isAuthenticated = computed(() => this._userData() !== null && this.isTokenValid());
   readonly userRoles = computed(() => this._userData()?.roles ?? []);
@@ -37,6 +40,12 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userDataKey);
     this._userData.set(null);
+  }
+
+  logout(): Observable<{ message: string }> {
+    this.clearAuthData();
+
+    return this.authApi.logout();
   }
 
   getToken(): string | null {

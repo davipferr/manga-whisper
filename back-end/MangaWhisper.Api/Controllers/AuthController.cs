@@ -67,6 +67,13 @@ public class AuthController : ControllerBase
         });
     }
 
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return Ok(new { message = "Logged out successfully." });
+    }
+
     private async Task<string> GenerateJwtToken(ApplicationUser user)
     {
         var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
@@ -91,7 +98,7 @@ public class AuthController : ControllerBase
 
         foreach (var role in userRoles)
         {
-            claims.Add(new Claim(ClaimTypes.Role, role));
+            claims.Add(new Claim(ClaimTypes.Role, role.ToUpperInvariant()));
         }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
