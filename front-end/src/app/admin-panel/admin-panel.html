@@ -5,18 +5,39 @@
         <h2 class="card-title fs-2 fw-bold text-dark mb-4"> Procurar por capítulos </h2>
       </div>
 
+      <div>
+        @if (statusMessage().message) {
+        <div class="mb-3">
+          <div
+            class="alert fw-bold"
+            [ngClass]="{
+              'alert-success': !statusMessage().isError && !statusMessage().isWarning,
+              'alert-danger': statusMessage().isError,
+              'alert-warning': statusMessage().isWarning
+            }"
+            role="alert"
+          >
+            {{ statusMessage().message }}
+          </div>
+        </div>
+        }
+      </div>
+
       <div class="d-flex justify-content-center align-items-center gap-3">
         <button
           class="btn w-25 fw-bold rounded-pill check-for-new-chapter-btn btn-lg"
           (click)="onCheckForNewChapters()"
-          [disabled]="isCheckingNewChapters()">
-          @if (isCheckingNewChapters()) {
-            <span>Checking...</span>
-          } @else {
-            <span>Check if new chapter is released</span>
-          }
+          [disabled]="isCheckingNewChapters()"
+        >
+          <span>Check if new chapter is released</span>
         </button>
-        <button class="btn w-25 fw-bold rounded-pill check-until-latest-chapter-btn btn-lg">Check until the latest chapter </button>
+        <button
+          class="btn w-25 fw-bold rounded-pill check-until-latest-chapter-btn btn-lg"
+          (click)="ProcessAllAvailableChapters()"
+          [disabled]="isCheckingNewChapters()"
+        >
+          Check until the latest chapter
+        </button>
       </div>
     </div>
   </div>

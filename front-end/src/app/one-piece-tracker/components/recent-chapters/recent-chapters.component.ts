@@ -1,6 +1,7 @@
 import { Component, input, inject } from '@angular/core';
 import { Chapter } from '../../models/chapter.model';
 import { ChapterService } from '../../services/chapter.service';
+import { AuthService } from 'src/app/shared/core/auth.service';
 
 @Component({
   selector: 'app-recent-chapters',
@@ -45,6 +46,9 @@ import { ChapterService } from '../../services/chapter.service';
                         Chapter {{ chapter.number }} - {{ chapter.title ? chapter.title : 'No Title' }}
                       </div>
                       <div class="status-pill">Released</div>
+                      @if (isAdmin()) {
+                        <button class="see-chapter-pill"> See chapter </button>
+                      }
                     </div>
                   </div>
                 </div>
@@ -75,11 +79,13 @@ import { ChapterService } from '../../services/chapter.service';
 })
 export class RecentChaptersComponent {
   chapters = input<Chapter[]>([]);
-  public chapterService = inject(ChapterService);
+  chapterService = inject(ChapterService);
+  private readonly authService = inject(AuthService);
+
+  readonly isAdmin = this.authService.hasAdminRole;
 
   ngOnInit(): void {
     this.chapterService.setPageSize(3);
     this.chapterService.fetchChapters();
   }
-
 }

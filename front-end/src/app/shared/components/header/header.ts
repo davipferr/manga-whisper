@@ -34,8 +34,9 @@ export class HeaderComponent {
   logout(): void {
     this.authService.logout().subscribe({
       next: () => {
-        console.log('Logged out successfully');
-        this.router.navigate(['/admin']);
+        if (this.currentRouteIsAdminPanel()) {
+          this.router.navigate(['/admin']);
+        }
       },
       error: (err) => console.error('Logout failed', err)
     });

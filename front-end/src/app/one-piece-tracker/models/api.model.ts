@@ -1,4 +1,5 @@
 export interface ChapterResponseDto {
+  mangaId: number;
   number: number;
   title: string;
   extractedAt: string;

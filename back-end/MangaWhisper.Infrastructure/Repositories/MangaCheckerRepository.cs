@@ -56,4 +56,12 @@ public class MangaCheckerRepository : IMangaCheckerRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<MangaChecker>> GetByMangaTitleAsync(string mangaTitle)
+    {
+        return await _context.MangaCheckers
+            .Include(mc => mc.Manga)
+            .Where(mc => mc.Manga.Title.Contains(mangaTitle))
+            .ToListAsync();
+    }
 }

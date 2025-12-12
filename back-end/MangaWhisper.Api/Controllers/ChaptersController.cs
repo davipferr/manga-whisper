@@ -57,6 +57,13 @@ public class ChaptersController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Trigger a manual chapter check
+    /// </summary>
+    /// <returns>Result of the manual chapter check</returns>
+    /// <remarks>
+    /// This endpoint is restricted to users with the ADMIN role.
+    /// </remarks>
     [Authorize(Roles = "ADMIN")]
     [HttpPost("check-now")]
     public async Task<ActionResult<ManualCheckResponseDto>> TriggerManualCheck()
@@ -77,6 +84,42 @@ public class ChaptersController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error occurred during manual chapter check");
+            return StatusCode(500, new ManualCheckResponseDto
+            {
+                Success = false,
+                ErrorMessage = "An unexpected error occurred"
+            });
+        }
+    }
+
+    /// <summary>
+    /// Trigger processing all available chapters for a specific checker
+    /// </summary>
+    /// <param name="checkerId">The ID of the checker</param>
+    /// <returns>Result of the process all available chapters</returns>
+    /// <remarks>
+    /// This endpoint is restricted to users with the ADMIN role.
+    /// </remarks>
+    [Authorize(Roles = "ADMIN")]
+    [HttpPost("process-all-available/{checkerId}")]
+    public async Task<ActionResult<ManualCheckResponseDto>> TriggerProcessAllAvailableChapters(int checkerId)
+    {
+        try
+        {
+            var command = new TriggerManualProcessAllAvailableChaptersCommand(checkerId);
+            var result = await _mediator.Send(command);
+
+            if (!result.Success)
+            {
+                _logger.LogWarning("Process all chapters failed: {ErrorMessage}", result.ErrorMessage);
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error occurred during process all chapters");
             return StatusCode(500, new ManualCheckResponseDto
             {
                 Success = false,

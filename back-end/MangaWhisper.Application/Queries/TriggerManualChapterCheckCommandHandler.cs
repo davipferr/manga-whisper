@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using MangaWhisper.Application.Commands;
 using MangaWhisper.Application.Services;
 using MangaWhisper.Common.DTOs.Responses;
+using System.Collections;
 
 namespace MangaWhisper.Application.Queries;
 
@@ -25,12 +26,18 @@ public class TriggerManualChapterCheckCommandHandler : IRequestHandler<TriggerMa
         {
             _logger.LogInformation("Manual chapter check triggered via API");
 
-            await _chapterCheckingService.CheckAllActiveCheckersManuallyAsync(cancellationToken);
+            var newChapters = await _chapterCheckingService.CheckAllActiveCheckersManuallyAsync(cancellationToken, true);
 
             return new ManualCheckResponseDto
             {
                 Success = true,
-                Message = "Manual chapter check completed successfully"
+                Message = FormatResponseMessage(newChapters),
+                NewChapters = newChapters.Select(c =>
+                new ChapterResponseDto {
+                    MangaId = c.MangaId,
+                    Title = c.Title,
+                    Number = c.Number
+                }).ToList()
             };
         }
         catch (OperationCanceledException)
@@ -50,6 +57,27 @@ public class TriggerManualChapterCheckCommandHandler : IRequestHandler<TriggerMa
                 Success = false,
                 ErrorMessage = "An error occurred during manual chapter check"
             };
+        }
+    }
+
+    // TODO: Move to a shared utility class
+    private string FormatResponseMessage<T>(IEnumerable<T> list)
+    {
+        int newChaptersCount = list.Count();
+
+        string successfullMessage = "Manual chapter check completed successfully.";
+
+        if (newChaptersCount == 0)
+        {
+            return $"{successfullMessage} No new chapters found during manual check.";
+        }
+        else if (newChaptersCount == 1)
+        {
+            return $"{successfullMessage} 1 new chapter found during manual check.";
+        }
+        else
+        {
+            return $"{successfullMessage} {newChaptersCount} new chapters found during manual check.";
         }
     }
 }
