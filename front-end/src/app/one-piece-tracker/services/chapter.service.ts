@@ -76,6 +76,7 @@ export class ChapterService {
           this.recentChaptersData.set(response.chapters.map(dto => ({
             number: dto.number,
             title: dto.title,
+            url: dto.url,
             extractedAt: dto.extractedAt
           })));
 
@@ -106,6 +107,7 @@ export class ChapterService {
     return {
       number: 0,
       title: 'No latest chapter',
+      url: '',
       extractedAt: 'N/A',
     };
   }
@@ -116,6 +118,7 @@ export class ChapterService {
     return {
       number: latest.number + 1,
       title: 'To Be Announced',
+      url: '',
       extractedAt: 'TBA',
     };
   }

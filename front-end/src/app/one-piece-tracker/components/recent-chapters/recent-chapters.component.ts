@@ -47,7 +47,7 @@ import { AuthService } from 'src/app/shared/core/auth.service';
                       </div>
                       <div class="status-pill">Released</div>
                       @if (isAdmin()) {
-                        <button class="see-chapter-pill"> See chapter </button>
+                        <button class="see-chapter-pill" (click)="seeChapter(chapter.url)"> See chapter </button>
                       }
                     </div>
                   </div>
@@ -87,5 +87,9 @@ export class RecentChaptersComponent {
   ngOnInit(): void {
     this.chapterService.setPageSize(3);
     this.chapterService.fetchChapters();
+  }
+
+  seeChapter(url: string): void {
+    window.open(url, '_blank');
   }
 }

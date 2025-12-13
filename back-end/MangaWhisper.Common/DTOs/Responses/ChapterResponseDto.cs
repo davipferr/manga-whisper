@@ -5,6 +5,7 @@ public class ChapterResponseDto
     public int MangaId { get; set; }
     public int Number { get; set; }
     public string Title { get; set; } = string.Empty;
+    public string Url { get; set; } = string.Empty;
     public string ExtractedAt { get; set; } = string.Empty;
 }
 

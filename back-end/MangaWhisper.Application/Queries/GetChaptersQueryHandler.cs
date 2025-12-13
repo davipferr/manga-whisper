@@ -31,6 +31,7 @@ public class GetChaptersQueryHandler : IRequestHandler<GetChaptersQuery, Chapter
             {
                 Number = chapter.Number,
                 Title = chapter.Title,
+                Url = chapter.Url,
                 ExtractedAt = chapter.ExtractedAt.ToString("dd/MM/yyyy")
             }).ToList();
 

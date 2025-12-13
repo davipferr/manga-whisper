@@ -27,7 +27,7 @@ import { Chapter } from '../../models/chapter.model';
             </span>
           </div>
           <h3 class="chapter-title fs-2 fw-bold text-dark mb-4">
-            {{ chapterInfo().title }}
+            {{ chapterInfo().title ? chapterInfo().title : 'No Title' }}
           </h3>
 
           <div>
@@ -73,7 +73,7 @@ export class ChapterCardComponent {
 
     if (this.isLatestChapter())
     {
-      return 'Released on';
+      return 'Extracted on';
     }
 
     return 'Expected on';
