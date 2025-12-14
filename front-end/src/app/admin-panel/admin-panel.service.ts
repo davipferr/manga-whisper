@@ -35,10 +35,6 @@ export class AdminPanelService {
 
   private setSuccessMessage(statusMessage: StatusMessage, response: Readonly<ManualCheckResponseDto>): void {
     statusMessage.message = response.message ?? 'Chapter check completed successfully!';
-
-    if (response.newChapters && response.newChapters.length > 0) {
-      statusMessage.message += '. New chapters found: ' + response.newChapters.map(chapter => chapter.number).join(', ');
-    }
   }
 
   private setErrorMessage(statusMessage: StatusMessage, response: Readonly<ManualCheckResponseDto>): void {
