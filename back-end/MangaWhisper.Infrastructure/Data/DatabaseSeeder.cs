@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MangaWhisper.Common.Enums;
 using MangaWhisper.Domain.Entities;
 
 namespace MangaWhisper.Infrastructure.Data;
@@ -11,9 +13,12 @@ public static class DatabaseSeeder
         using var scope = serviceProvider.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         await SeedRolesAsync(roleManager);
         await SeedAdminUserAsync(userManager);
+        await SeedMangaAsync(dbContext);
+        await SeedMangaCheckerAsync(dbContext);
     }
 
     private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
@@ -63,6 +68,60 @@ public static class DatabaseSeeder
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new InvalidOperationException($"Failed to create admin user: {errors}");
+            }
+        }
+    }
+
+    private static async Task SeedMangaAsync(ApplicationDbContext dbContext)
+    {
+        const string onePieceTitle = "One Piece";
+
+        var existingManga = await dbContext.Mangas
+            .FirstOrDefaultAsync(m => m.Title == onePieceTitle);
+
+        if (existingManga == null)
+        {
+            var manga = new Manga
+            {
+                Title = onePieceTitle,
+                CoverImageUrl = "",
+                Status = MangaStatus.Ongoing,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            dbContext.Mangas.Add(manga);
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
+    private static async Task SeedMangaCheckerAsync(ApplicationDbContext dbContext)
+    {
+        const string siteIdentifier = "mugiwara-oficial";
+
+        var existingChecker = await dbContext.MangaCheckers
+            .FirstOrDefaultAsync(mc => mc.SiteIdentifier == siteIdentifier);
+
+        if (existingChecker == null)
+        {
+            var onePieceManga = await dbContext.Mangas
+                .FirstOrDefaultAsync(m => m.Title == "One Piece");
+
+            if (onePieceManga != null)
+            {
+                var mangaChecker = new MangaChecker
+                {
+                    MangaId = onePieceManga.Id,
+                    LastKnownChapter = 0,
+                    CheckIntervalMinutes = 1,
+                    IsActive = true,
+                    CheckerStatus = MangaCheckerStatus.Idle,
+                    CreatedAt = DateTime.UtcNow,
+                    SiteIdentifier = siteIdentifier
+                };
+
+                dbContext.MangaCheckers.Add(mangaChecker);
+                await dbContext.SaveChangesAsync();
             }
         }
     }
