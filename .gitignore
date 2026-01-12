@@ -64,6 +64,9 @@ Thumbs.db
 /back-end/**/*.usertasks
 /back-end/**/.vs/
 
+# Migration Production files
+/back-end/**/migration_prod.sql
+
 # Build results
 /back-end/**/[Dd]ebug/
 /back-end/**/[Dd]ebugPublic/

@@ -9,7 +9,6 @@ using MangaWhisper.Infrastructure.Data;
 using MangaWhisper.Domain.Entities;
 using MangaWhisper.Domain.Factories;
 using MangaWhisper.Domain.Repositories;
-using MangaWhisper.Infrastructure.Services;
 using MangaWhisper.Infrastructure.Repositories;
 
 namespace MangaWhisper.Infrastructure.Extensions;
@@ -88,9 +87,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMangaCheckerRepository, MangaCheckerRepository>();
         services.AddScoped<IChapterRepository, ChapterRepository>();
         services.AddScoped<IMangaRepository, MangaRepository>();
-
-        // Background service
-        services.AddHostedService<ChapterCheckingBackgroundService>();
 
         return services;
     }

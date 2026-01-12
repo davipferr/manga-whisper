@@ -90,6 +90,9 @@ export class RecentChaptersComponent {
   }
 
   seeChapter(url: string): void {
-    window.open(url, '_blank');
+    if (this.isAdmin())
+    {
+      window.open(url, '_blank');
+    }
   }
 }
