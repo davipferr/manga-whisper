@@ -1,54 +1,79 @@
 # Manga Whisper
 A voz suave que te conta quando chega um capítulo
 
-# ⚙️ Database Configuration Guide
+## 🧩 How the pieces fit together
 
-This guide explains how to securely configure your PostgreSQL database connection for the MangaWhisper project.
+| Service | Source | Role |
+| --- | --- | --- |
+| `front-end` | `front-end/` (Angular) | UI, served by nginx. `/api` is proxied to the API container |
+| `api` | `back-end/` (ASP.NET Core) | Reads chapters, authentication (JWT + Identity) |
+| `worker` | `../manga-whisper-background-worker` (separate repo) | Scrapes new chapters with Selenium and writes them to the database |
+| `db` | `database/init/` (SQL) | PostgreSQL shared by `api` and `worker` |
 
-## 🚀 Quick Setup (Recommended)
+The API and the worker never call each other: they only share the database.
 
-### Step 1: Create a `.env` file in `back-end/MangaWhisper.Api/`
+## 🐳 Local setup (Docker)
 
-Inside the directory `back-end/MangaWhisper.Api/` make a copy of the file `.env.example` and rename it to `.env`
+### Prerequisites
 
-### Step 2: Replace with Your PostgreSQL Details
+- Docker Desktop
+- Both repositories cloned as sibling folders:
 
-```bash
-ConnectionStrings__DefaultConnection=Host=localhost;Database=your_db_name;Username=your_username;Password=your_password;Port=5432
+```text
+<parent>/
+├── manga-whisper/                    (this repo)
+└── manga-whisper-background-worker/
 ```
 
-### Example values:
-- **Host**: `localhost` or your PostgreSQL server address
-- **Database**: `manga_whisper_dev` (development)
-- **Username**: Your PostgreSQL username (usually `postgres`)
-- **Password**: Your PostgreSQL password
-- **Port**: `5432` (default PostgreSQL port)
+### Step 1: Create the `.env` file
 
-## 🧪 Testing Your Configuration
+In the root of this repo, make a copy of `.env.example` and rename it to `.env`. Adjust the values if you want (passwords, admin user, worker schedule).
 
-Run the application to test the connection:
+### Step 2: Start everything
 
 ```bash
-cd back-end/MangaWhisper.Api
-dotnet run
+docker compose up --build
 ```
 
-If the connection is successful, you'll see no database errors in the startup logs.
+| URL | What |
+| --- | --- |
+| http://localhost:4200 | Front-end |
+| http://localhost:4200/admin | Admin login (`ADMIN_EMAIL` / `ADMIN_PASSWORD` from `.env`) |
+| http://localhost:5065/api/chapters | API (directly) |
+| http://localhost:5065/openapi/v1.json | OpenAPI document |
+| `localhost:5432` | PostgreSQL (for your DB client) |
 
-## 🛠️ Troubleshooting
+## 🗄️ Database (no migrations)
 
-### Common Issues:
+The project does **not** use EF Core migrations. The schema is plain SQL:
 
-1. **"Database connection string not found"**
-   - Ensure you've set the connection string
+- `database/init/01-schema.sql`: tables and indexes
+- `database/init/02-seed.sql`: initial data (One Piece + its checker)
 
-2. **"Cannot connect to PostgreSQL"**
-   - Verify PostgreSQL is running
-   - Check host, port, and credentials
-   - Ensure the database exists
+PostgreSQL runs these scripts **only when its data volume is empty** (first start). Roles and the admin user are created by the API on startup (`DatabaseSeeder`), because the password must be hashed by ASP.NET Identity.
 
-3. **"Authentication failed"**
-   - Verify username and password
-   - Check PostgreSQL user permissions
+When you change the schema, edit the SQL files, update the entities in **both** repositories, and re-create the database:
 
-💡 **Remember**: The `.env` file is ignored by Git, so your credentials are safe!
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+`-v` deletes the database volume (all data). To keep data, apply the change manually with your DB client instead (`ALTER TABLE ...`) and also add it to `01-schema.sql`.
+
+## 🛠️ Useful commands
+
+```bash
+docker compose logs -f worker          # follow the scraper
+docker compose logs -f api
+docker compose up --build api          # rebuild/restart a single service
+docker compose exec db psql -U postgres -d manga_whisper
+docker compose down                    # stop (keeps data)
+```
+
+## 💻 Running a service outside Docker (optional)
+
+Useful for debugging with breakpoints or `ng serve` hot reload. Keep the `db` container running (`docker compose up db`) and:
+
+- **API**: copy `back-end/MangaWhisper.Api/.env.example` to `.env`, then `dotnet run` inside `back-end/MangaWhisper.Api` (listens on http://localhost:5065).
+- **Front-end**: `npm install && npm start` inside `front-end` (http://localhost:4200, calls the API at http://localhost:5065). Stop the `front-end` container first, since it uses the same port.

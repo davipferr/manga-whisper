@@ -1,0 +1,73 @@
+# Local environment: PostgreSQL + API + background worker + front-end.
+# The background worker lives in its own repository, expected as a sibling folder:
+#
+#   <parent>/
+#   ├── manga-whisper/                    (this repo)
+#   └── manga-whisper-background-worker/
+#
+# Usage: copy .env.example to .env, then `docker compose up --build`.
+
+name: manga-whisper
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Schema + seed, executed only when db-data is empty
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./back-end
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: ${JWT_ISSUER}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    ports:
+      - "5065:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ../manga-whisper-background-worker
+    environment:
+      DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      CHECK_DAYS_OF_WEEK: ${CHECK_DAYS_OF_WEEK}
+      CHECK_START_HOUR: ${CHECK_START_HOUR}
+      CHECK_INTERVAL_HOURS: ${CHECK_INTERVAL_HOURS}
+      ENABLE_BATCH_SCRAPING: ${ENABLE_BATCH_SCRAPING}
+      STOP_APP_AFTER_BATCH_SCRAPING: ${STOP_APP_AFTER_BATCH_SCRAPING}
+    # Headless Chromium needs more shared memory than Docker's 64MB default
+    shm_size: 1gb
+    depends_on:
+      db:
+        condition: service_healthy
+
+  front-end:
+    build:
+      context: ./front-end
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
+volumes:
+  db-data:

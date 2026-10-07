@@ -23,9 +23,9 @@ public class GetChaptersQueryHandler : IRequestHandler<GetChaptersQuery, Chapter
     {
         try
         {
-            var chapters = await _chapterRepository.GetPaginatedAsync(request.Page, request.PageSize);
-            
-            var totalChapters = await _chapterRepository.GetTotalCountAsync();
+            var chapters = await _chapterRepository.GetPaginatedAsync(request.Page, request.PageSize, request.MangaTitle);
+
+            var totalChapters = await _chapterRepository.GetTotalCountAsync(request.MangaTitle);
 
             var chapterDtos = chapters.Select(chapter => new ChapterResponseDto
             {

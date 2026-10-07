@@ -1,9 +1,10 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, of, tap } from 'rxjs';
 import { Chapter } from '../models/chapter.model';
 import { ChaptersListResponseDto } from '../models/api.model';
 import { environment } from '../../../environments/environment';
+import { MangaTitleEnum } from '../../admin-panel/manga-title.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +47,12 @@ export class ChapterService {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.http.get<ChaptersListResponseDto>(`${this.apiUrl}?page=${page}&pageSize=${this.pageSize}`)
+    const params = new HttpParams()
+      .set('page', page)
+      .set('pageSize', this.pageSize)
+      .set('mangaTitle', MangaTitleEnum.OnePiece);
+
+    this.http.get<ChaptersListResponseDto>(this.apiUrl, { params })
       .pipe(
         catchError(error => {
           console.error('Error fetching chapters:', error);

@@ -25,16 +25,18 @@ public class ChaptersController : ControllerBase
     /// </summary>
     /// <param name="page">The page number (default is 1)</param>
     /// <param name="pageSize">The number of items per page (default is 5)</param>
+    /// <param name="mangaTitle">Optional manga title to filter by (all mangas when omitted)</param>
     /// <returns>Paginated list of chapters</returns>
     [HttpGet]
-    public async Task<ActionResult<ChaptersListResponseDto>> GetChapters(int page = 1, int pageSize = 5)
+    public async Task<ActionResult<ChaptersListResponseDto>> GetChapters(int page = 1, int pageSize = 5, string? mangaTitle = null)
     {
         try
         {
             var query = new GetChaptersQuery
             {
                 Page = page,
-                PageSize = pageSize
+                PageSize = pageSize,
+                MangaTitle = mangaTitle
             };
             var result = await _mediator.Send(query);
 

@@ -27,9 +27,9 @@ public class ChapterRepository : IChapterRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Chapter>> GetPaginatedAsync(int page, int pageSize)
+    public async Task<IEnumerable<Chapter>> GetPaginatedAsync(int page, int pageSize, string? mangaTitle = null)
     {
-        return await _context.Chapters
+        return await FilterByMangaTitle(mangaTitle)
             .OrderByDescending(c => c.Number)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -46,8 +46,18 @@ public class ChapterRepository : IChapterRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<int> GetTotalCountAsync()
+    public async Task<int> GetTotalCountAsync(string? mangaTitle = null)
     {
-        return await _context.Chapters.CountAsync();
+        return await FilterByMangaTitle(mangaTitle).CountAsync();
+    }
+
+    private IQueryable<Chapter> FilterByMangaTitle(string? mangaTitle)
+    {
+        if (string.IsNullOrWhiteSpace(mangaTitle))
+        {
+            return _context.Chapters;
+        }
+
+        return _context.Chapters.Where(c => c.Manga.Title == mangaTitle);
     }
 }

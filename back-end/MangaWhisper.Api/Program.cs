@@ -18,10 +18,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins(
-                    "http://localhost:4200",
-                    "https://manga-whisper-production.web.app"
-                )
+            // Only needed for `ng serve`; in Docker the front-end reaches the API through the nginx proxy (same origin)
+            policy.WithOrigins("http://localhost:4200")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });

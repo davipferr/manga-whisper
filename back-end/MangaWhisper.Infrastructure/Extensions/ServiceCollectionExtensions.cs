@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MangaWhisper.Infrastructure.Data;
 using MangaWhisper.Domain.Entities;
-using MangaWhisper.Domain.Factories;
 using MangaWhisper.Domain.Repositories;
 using MangaWhisper.Infrastructure.Repositories;
 
@@ -17,7 +16,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Get connection string from configuration (.env or Azure App Services Environment Variables)
+        // Get connection string from environment variables (.env locally or docker-compose)
         var connectionString = Environment.GetEnvironmentVariable("DefaultConnection")
                               ?? throw new InvalidOperationException("Database connection string 'DefaultConnection' not found in configuration.");
 
@@ -79,11 +78,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<QueryDbContext>(provider =>
             new QueryDbContext(connectionString));
 
-        // HttpClient
-        services.AddHttpClient();
-
-        // Infrastructure specific services
-        services.AddScoped<IChapterCheckerFactory, ChapterCheckerFactory>();
+        // Repositories
         services.AddScoped<IMangaCheckerRepository, MangaCheckerRepository>();
         services.AddScoped<IChapterRepository, ChapterRepository>();
         services.AddScoped<IMangaRepository, MangaRepository>();

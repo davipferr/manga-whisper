@@ -37,4 +37,5 @@ You are an expert in C#, .NET, and scalable web application development. You wri
 - Always returns DTOs from the API layer to the client
 - Use manual mapping for mapping between entities and DTOs
 - The project uses Background Services
-- The project migrations are in \back-end\MangaWhisper.Infrastructure\Data\Migrations
+- The project does NOT use EF Core migrations. The database schema is plain SQL in \database\init\01-schema.sql (seed data in 02-seed.sql); any entity change must be reflected there and in the background worker repository
+- Never call `Database.Migrate()` / `EnsureCreated()`
