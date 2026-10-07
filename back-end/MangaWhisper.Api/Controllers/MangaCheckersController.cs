@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using MangaWhisper.Application.Commands;
 using MangaWhisper.Application.Queries;
 using MangaWhisper.Common.DTOs.Responses.MangaChecker;
 using Microsoft.AspNetCore.Authorization;

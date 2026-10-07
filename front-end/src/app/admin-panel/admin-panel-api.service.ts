@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { MangaCheckerListResponseDto, ManualCheckResponseDto } from './admin-panel.model';
+import { MangaCheckerListResponseDto } from './admin-panel.model';
 
 @Injectable({
   providedIn: 'root'
