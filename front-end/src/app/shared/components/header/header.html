@@ -1,22 +1,16 @@
-<header class="header logo-text fw-semibold container">
-  <div class="row">
-    <div
-      class="col d-flex flex-column justify-content-center align-items-center logo-pointer"
-      (click)="goToHome()"
-    >
-      <h1>{{ title() }}</h1>
-      <p>Never miss a chapter release</p>
-    </div>
-    @if (isAdmin()) {
-      <div class="col-4 d-flex gap-3 align-items-center justify-content-end">
-        <div class="d-flex align-items-center">
-          <span>Welcome, @{{ adminName() }}!</span>
-        </div>
-        <div class="d-flex flex-column align-items-center gap-1">
-          <button class="btn btn-success w-100" [disabled]="currentRouteIsAdminPanel()" (click)="goToPanel()">Go to Panel</button>
-          <button class="btn btn-primary w-100" (click)="logout()">Logout</button>
-        </div>
-      </div>
-    }
-  </div>
+<header class="site-header">
+  <a class="wordmark" routerLink="/" aria-label="Manga Whisper, home">
+    <span class="wordmark-name">Manga Whisper</span>
+    <span class="wordmark-tagline">Never miss a chapter release</span>
+  </a>
+
+  @if (isAdmin()) {
+    <nav class="admin-nav" aria-label="Admin">
+      <span class="admin-name">Signed in as {{ adminName() }}</span>
+      <a class="mw-btn" routerLink="/admin-panel" routerLinkActive="is-current" ariaCurrentWhenActive="page">
+        Control panel
+      </a>
+      <button type="button" class="mw-btn mw-btn-quiet" (click)="logout()">Sign out</button>
+    </nav>
+  }
 </header>

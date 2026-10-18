@@ -1,19 +1,168 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/*
+ * Manga Whisper design tokens.
+ * The look borrows from printed manga: newsprint paper, black ink panels,
+ * screentone dots and the dashed balloon manga uses for whispered lines.
+ * Bootstrap stays for the grid and utilities; its variables are re-pointed here.
+ */
+:root {
+  --mw-paper: #edeee9;
+  --mw-paper-raised: #f7f7f3;
+  --mw-ink: #000;
+  --mw-text: #2b2b2b;
+  --mw-text-muted: #5f615c;
+  --mw-tone: #9a9c97;
+  --mw-red: #d7261e;
+  --mw-red-dark: #a91a13;
+  --mw-straw: #f3c845;
+
+  --mw-font-display: 'Dela Gothic One', 'Arial Black', sans-serif;
+  --mw-font-body: 'Zen Kaku Gothic New', 'Segoe UI', sans-serif;
+
+  --mw-rule: 3px;
+  --mw-gutter: clamp(12px, 2vw, 20px);
+  --mw-measure: 1120px;
+
+  --bs-body-bg: var(--mw-paper);
+  --bs-body-color: var(--mw-text);
+  --bs-body-font-family: var(--mw-font-body);
+  --bs-body-font-size: 1rem;
+  --bs-body-line-height: 1.6;
+  --bs-border-color: var(--mw-ink);
+  --bs-link-color-rgb: 0, 0, 0;
+  --bs-link-hover-color-rgb: 169, 26, 19;
+  --bs-secondary-color: var(--mw-text-muted);
 }
 
 body {
   min-height: 100vh;
-  width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  padding: 20px 0;
+  background-color: var(--mw-paper);
+  color: var(--mw-text);
+  font-family: var(--mw-font-body);
+  -webkit-font-smoothing: antialiased;
 }
 
-@media (max-width: 768px) {
-  .body {
-    padding: 15px 0;
+h1, h2, h3 {
+  font-family: var(--mw-font-display);
+  font-weight: 400;
+  color: var(--mw-ink);
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); }
+h3 { font-size: 1.25rem; }
+
+.mw-page {
+  max-width: var(--mw-measure);
+  margin: 0 auto;
+  padding: 0 16px 64px;
+}
+
+/* Panels: square, thick ink borders, like the frames of a manga page */
+.mw-panel {
+  background: var(--mw-paper-raised);
+  border: var(--mw-rule) solid var(--mw-ink);
+}
+
+.mw-screentone {
+  background-color: var(--mw-paper-raised);
+  background-image: radial-gradient(var(--mw-tone) 1.1px, transparent 1.3px);
+  background-size: 7px 7px;
+}
+
+/* Narration box: the rectangular caption a manga uses for the narrator */
+.mw-narration {
+  background: var(--mw-paper-raised);
+  border: 2px solid var(--mw-ink);
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.mw-muted { color: var(--mw-text-muted); }
+
+/* Buttons */
+.mw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 18px;
+  font-family: var(--mw-font-body);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--mw-ink);
+  background: var(--mw-paper-raised);
+  border: 2px solid var(--mw-ink);
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 120ms ease, transform 120ms ease;
+}
+
+.mw-btn:hover:not(:disabled) { background: var(--mw-straw); }
+.mw-btn:active:not(:disabled) { transform: translateY(1px); }
+
+.mw-btn:disabled {
+  color: var(--mw-tone);
+  border-color: var(--mw-tone);
+  cursor: not-allowed;
+}
+
+.mw-btn-primary {
+  color: #fff;
+  background: var(--mw-red);
+  border-color: var(--mw-ink);
+}
+
+.mw-btn-primary:hover:not(:disabled) { background: var(--mw-red-dark); }
+
+.mw-btn-quiet {
+  border-color: transparent;
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Forms */
+.mw-field { display: flex; flex-direction: column; gap: 6px; }
+
+.mw-field label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--mw-ink);
+}
+
+.mw-input {
+  min-height: 44px;
+  padding: 8px 12px;
+  font: inherit;
+  color: var(--mw-ink);
+  background: #fff;
+  border: 2px solid var(--mw-ink);
+  border-radius: 4px;
+}
+
+.mw-input[aria-invalid='true'] { border-color: var(--mw-red); }
+
+.mw-error {
+  color: var(--mw-red-dark);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* One focus treatment everywhere: a straw-yellow halo around an ink outline */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--mw-ink);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--mw-straw);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

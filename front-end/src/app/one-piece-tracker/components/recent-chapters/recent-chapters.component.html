@@ -1,0 +1,60 @@
+<section class="chapters" aria-labelledby="chapters-heading">
+  <div class="chapters-head">
+    <h2 id="chapters-heading">All chapters</h2>
+    @if (chapterService.totalPages() > 0) {
+      <p class="mw-muted chapters-count">
+        {{ chapterService.totalChapters() }} saved, page {{ chapterService.currentPage() }} of
+        {{ chapterService.totalPages() }}
+      </p>
+    }
+  </div>
+
+  @if (chapterService.errorMessage(); as error) {
+    <div class="mw-narration chapters-error" role="alert">
+      <p>{{ error }} Trying again in {{ chapterService.retryAfter() }} seconds.</p>
+      <button type="button" class="mw-btn" (click)="retryNow()">Try again now</button>
+    </div>
+  }
+
+  <ul class="chapter-list" [attr.aria-busy]="chapterService.loading()">
+    @for (chapter of chapters(); track chapter.number) {
+      <li class="chapter-row">
+        <span class="chapter-number">{{ chapter.number }}</span>
+        <span class="chapter-title">{{ chapter.title || 'Untitled chapter' }}</span>
+        <span class="chapter-date mw-muted">{{ chapter.extractedAt }}</span>
+        @if (isAdmin() && chapter.url) {
+          <a class="chapter-link" [href]="chapter.url" target="_blank" rel="noopener">
+            Read<span class="visually-hidden"> chapter {{ chapter.number }}</span>
+          </a>
+        }
+      </li>
+    } @empty {
+      @if (chapterService.loading()) {
+        <li class="chapter-empty" role="status">Loading chapters</li>
+      } @else if (!chapterService.errorMessage()) {
+        <li class="chapter-empty">No chapters saved yet. They show up here as the checker finds them.</li>
+      }
+    }
+  </ul>
+
+  @if (chapterService.totalPages() > 1) {
+    <nav class="pager" aria-label="Chapter pages">
+      <button
+        type="button"
+        class="mw-btn"
+        (click)="chapterService.previousPage()"
+        [disabled]="chapterService.currentPage() === 1 || chapterService.loading()"
+      >
+        Newer chapters
+      </button>
+      <button
+        type="button"
+        class="mw-btn"
+        (click)="chapterService.nextPage()"
+        [disabled]="chapterService.currentPage() >= chapterService.totalPages() || chapterService.loading()"
+      >
+        Older chapters
+      </button>
+    </nav>
+  }
+</section>

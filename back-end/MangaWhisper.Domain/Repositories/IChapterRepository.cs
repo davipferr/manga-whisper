@@ -10,4 +10,5 @@ public interface IChapterRepository
     Task SaveChangesAsync();
     Task<IEnumerable<Chapter>> GetPaginatedAsync(int page, int pageSize, string? mangaTitle = null);
     Task<int> GetTotalCountAsync(string? mangaTitle = null);
+    Task<IDictionary<int, int>> GetCountsByMangaAsync();
 }

@@ -1,12 +1,55 @@
-<div>
-  <div class="card w-75 mx-auto">
-    <div class="card-body d-flex flex-column p-4">
-      <div class="d-flex justify-content-center align-items-center">
-        <h2 class="card-title fs-2 fw-bold text-dark mb-4"> Procurar por capítulos </h2>
-      </div>
-
-      <!-- <div class="card-body bg-secondary p-4 rounded-3 h-50">
-      </div> -->
-    </div>
-  </div>
+<div class="panel-head">
+  <h1>Control panel</h1>
+  <p class="mw-muted">
+    The worker looks for new chapters on its schedule. Pause a checker to stop it, or change the last
+    known chapter to make it look again from an earlier number.
+  </p>
 </div>
+
+<section aria-labelledby="checkers-heading">
+  <div class="section-head">
+    <h2 id="checkers-heading">Checkers</h2>
+    <button type="button" class="mw-btn" (click)="loadCheckers()" [disabled]="loading()">
+      {{ loading() ? 'Refreshing' : 'Refresh' }}
+    </button>
+  </div>
+
+  @if (loadError(); as error) {
+    <div class="mw-narration load-error" role="alert">
+      <p>{{ error }}</p>
+      <button type="button" class="mw-btn" (click)="loadCheckers()">Try again</button>
+    </div>
+  }
+
+  <div class="checker-grid" [attr.aria-busy]="loading()">
+    @for (checker of checkers(); track checker.id) {
+      <app-checker-card [checker]="checker" (updated)="onCheckerUpdated($event)" (unauthorized)="onUnauthorized()" />
+    } @empty {
+      @if (!loading() && !loadError()) {
+        <p class="mw-muted">
+          No checkers yet. Add a manga and its checker in <code>database/init/02-seed.sql</code>.
+        </p>
+      }
+    }
+  </div>
+</section>
+
+@if (mangaTitles().length > 0) {
+  <section class="chapters-section" aria-labelledby="saved-heading">
+    <div class="section-head">
+      <h2 id="saved-heading">Saved chapters</h2>
+      @if (mangaTitles().length > 1) {
+        <div class="mw-field manga-picker">
+          <label for="manga-picker">Manga</label>
+          <select id="manga-picker" class="mw-input" [value]="selectedManga()" (change)="selectManga($event)">
+            @for (title of mangaTitles(); track title) {
+              <option [value]="title">{{ title }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+
+    <app-admin-chapters [mangaTitle]="selectedManga()" />
+  </section>
+}

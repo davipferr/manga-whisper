@@ -1,26 +1,50 @@
-<div class="card w-50 mx-auto">
-  <div class="card-body d-flex flex-column p-4">
-    <h5 class="card-title">Admin Login</h5>
-    <form [formGroup]="loginForm" class="flex-grow-1 d-flex flex-column">
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
+<section class="login mw-panel" aria-labelledby="login-heading">
+  <div class="login-strip mw-screentone" aria-hidden="true"></div>
+
+  <div class="login-body">
+    <h1 id="login-heading">Sign in to the control panel</h1>
+    <p class="mw-muted">Pause the chapter checker, fix the last known chapter and see what has been saved.</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" novalidate class="login-form">
+      <div class="mw-field">
+        <label for="email">Email</label>
         <input
-          type="text"
           id="email"
-          class="form-control"
+          type="email"
+          class="mw-input"
           formControlName="email"
+          autocomplete="username"
+          [attr.aria-invalid]="showError('email')"
+          aria-describedby="email-error"
         />
+        @if (showError('email')) {
+          <span id="email-error" class="mw-error">Enter the admin email.</span>
+        }
       </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
+
+      <div class="mw-field">
+        <label for="password">Password</label>
         <input
-          type="password"
           id="password"
-          class="form-control"
+          type="password"
+          class="mw-input"
           formControlName="password"
+          autocomplete="current-password"
+          [attr.aria-invalid]="showError('password')"
+          aria-describedby="password-error"
         />
+        @if (showError('password')) {
+          <span id="password-error" class="mw-error">Enter the password.</span>
+        }
       </div>
-      <button type="submit" class="btn btn-primary mt-auto" (click)="onLogin()">Login</button>
+
+      @if (loginError(); as message) {
+        <p class="mw-error" role="alert">{{ message }}</p>
+      }
+
+      <button type="submit" class="mw-btn mw-btn-primary" [disabled]="submitting()">
+        {{ submitting() ? 'Signing in' : 'Sign in' }}
+      </button>
     </form>
   </div>
-</div>
+</section>

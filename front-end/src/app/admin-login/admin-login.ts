@@ -1,48 +1,67 @@
-import { Component, ViewEncapsulation, inject } from "@angular/core";
-import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule } from "@angular/forms";
-import { AdminLoginService } from "./admin-login.service";
-import { LoginRequestDto, LoginResponseDto, UnauthorizedResponseDto  } from './admin-login.model';
-import { Router } from "@angular/router";
-import { AuthService } from "../shared/core/auth.service";
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AdminLoginService } from './admin-login.service';
+import { LoginResponseDto } from './admin-login.model';
+import { AuthService } from '../shared/core/auth.service';
 
 @Component({
   selector: 'admin-login',
   templateUrl: './admin-login.html',
   styleUrl: './admin-login.css',
-  encapsulation: ViewEncapsulation.None,
-  imports: [ReactiveFormsModule]
+  imports: [ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminLoginComponent {
-  private readonly formBuilder = inject(UntypedFormBuilder);
+  private readonly formBuilder = inject(FormBuilder);
   private readonly adminLoginService = inject(AdminLoginService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  loginForm: UntypedFormGroup = this.formBuilder.group({
-    email: ['', Validators.required],
-    password: ['', Validators.required]
+  readonly submitting = signal(false);
+  readonly loginError = signal<string | null>(null);
+  private readonly submitted = signal(false);
+
+  readonly loginForm = this.formBuilder.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
   });
 
+  constructor() {
+    if (this.authService.isAuthenticated() && this.authService.hasAdminRole()) {
+      this.router.navigate(['/admin-panel']);
+    }
+  }
+
+  showError(field: 'email' | 'password'): boolean {
+    const control = this.loginForm.controls[field];
+    return control.invalid && (control.touched || this.submitted());
+  }
+
   onLogin(): void {
-    if (!this.loginForm.valid) {
+    this.submitted.set(true);
+    this.loginError.set(null);
+
+    if (this.loginForm.invalid) {
       return;
     }
 
-    const { email, password } = this.loginForm.value;
+    this.submitting.set(true);
 
-    const loginRequest: LoginRequestDto = {
-      email,
-      password
-    };
-
-    this.adminLoginService.login(loginRequest).subscribe({
+    this.adminLoginService.login(this.loginForm.getRawValue()).subscribe({
       next: (response: LoginResponseDto) => {
         this.authService.saveAuthData(response);
         this.router.navigate(['/admin-panel']);
       },
-      error: (error: UnauthorizedResponseDto) => {
-        console.error('Login failed:', error.message);
-      }
+      error: (error: HttpErrorResponse) => {
+        this.submitting.set(false);
+        this.loginError.set(
+          error.status === 0
+            ? 'The server could not be reached. Check that the API is running and try again.'
+            : (error.error?.message ?? 'Sign-in failed. Try again.')
+        );
+      },
     });
   }
 }

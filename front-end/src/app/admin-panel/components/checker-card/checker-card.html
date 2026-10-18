@@ -1,0 +1,75 @@
+<article class="checker mw-panel" [attr.aria-labelledby]="'checker-title-' + checker().id">
+  <header class="checker-head">
+    <div>
+      <h3 [id]="'checker-title-' + checker().id">{{ checker().mangaTitle }}</h3>
+      <p class="mw-muted checker-site">Source: {{ checker().siteIdentifier }}</p>
+    </div>
+    <span [class]="'status status-' + checker().status.toLowerCase()">{{ statusText() }}</span>
+  </header>
+
+  <dl class="facts">
+    <div class="fact">
+      <dt>Last known chapter</dt>
+      <dd class="fact-number">{{ checker().lastKnownChapter }}</dd>
+    </div>
+    <div class="fact">
+      <dt>Chapters saved</dt>
+      <dd class="fact-number">{{ checker().storedChapters }}</dd>
+    </div>
+    <div class="fact">
+      <dt>Last checked</dt>
+      <dd>{{ checker().lastCheckedAt ? (checker().lastCheckedAt | date: 'd MMM y, HH:mm') : 'Not checked yet' }}</dd>
+    </div>
+  </dl>
+
+  @if (checker().status === 'Error') {
+    <p class="mw-narration checker-alert">
+      The last check failed. Run <code>docker compose logs -f worker</code> to see why.
+    </p>
+  }
+
+  <div class="checker-actions">
+    <div class="mw-field">
+      <span class="field-label" [id]="'checking-label-' + checker().id">Checking</span>
+      <button
+        type="button"
+        class="mw-btn"
+        [class.mw-btn-primary]="!checker().isActive"
+        (click)="toggleActive()"
+        [disabled]="saving()"
+        [attr.aria-describedby]="'checking-hint-' + checker().id"
+      >
+        {{ checker().isActive ? 'Pause checking' : 'Resume checking' }}
+      </button>
+      <span class="mw-muted hint" [id]="'checking-hint-' + checker().id">
+        {{ checker().isActive ? 'Runs on the worker schedule.' : 'The worker skips this manga until you resume it.' }}
+      </span>
+    </div>
+
+    <form class="chapter-form" [formGroup]="chapterForm" (ngSubmit)="saveLastKnownChapter()" novalidate>
+      <div class="mw-field">
+        <label [for]="'last-known-' + checker().id">Last known chapter</label>
+        <div class="chapter-form-row">
+          <input
+            [id]="'last-known-' + checker().id"
+            type="number"
+            min="0"
+            inputmode="numeric"
+            class="mw-input"
+            formControlName="lastKnownChapter"
+            [attr.aria-invalid]="chapterForm.invalid"
+            [attr.aria-describedby]="'last-known-hint-' + checker().id"
+          />
+          <button type="submit" class="mw-btn" [disabled]="saving() || chapterForm.invalid || chapterForm.pristine">
+            Save
+          </button>
+        </div>
+        <span class="mw-muted hint" [id]="'last-known-hint-' + checker().id">
+          The checker looks for chapter {{ nextToCheck() }} next.
+        </span>
+      </div>
+    </form>
+  </div>
+
+  <p class="feedback" [class.mw-error]="feedbackIsError()" aria-live="polite">{{ feedback() }}</p>
+</article>

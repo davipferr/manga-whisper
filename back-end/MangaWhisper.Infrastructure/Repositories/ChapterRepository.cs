@@ -51,6 +51,14 @@ public class ChapterRepository : IChapterRepository
         return await FilterByMangaTitle(mangaTitle).CountAsync();
     }
 
+    public async Task<IDictionary<int, int>> GetCountsByMangaAsync()
+    {
+        return await _context.Chapters
+            .GroupBy(c => c.MangaId)
+            .Select(g => new { MangaId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.MangaId, x => x.Count);
+    }
+
     private IQueryable<Chapter> FilterByMangaTitle(string? mangaTitle)
     {
         if (string.IsNullOrWhiteSpace(mangaTitle))

@@ -28,6 +28,28 @@ public class MangaChecker
         LastCheckedAt = DateTime.UtcNow;
     }
 
+    public void Pause()
+    {
+        IsActive = false;
+        CheckerStatus = MangaCheckerStatus.Stopped;
+    }
+
+    public void Resume()
+    {
+        IsActive = true;
+        CheckerStatus = MangaCheckerStatus.Idle;
+    }
+
+    public void SetLastKnownChapter(int chapter)
+    {
+        if (chapter < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(chapter), "Chapter number cannot be negative.");
+        }
+
+        LastKnownChapter = chapter;
+    }
+
     public bool ShouldCheck()
     {
         if (!IsActive) return false;

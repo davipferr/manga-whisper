@@ -1,0 +1,46 @@
+<section class="spread" aria-labelledby="latest-heading">
+  <div class="spread-latest">
+    <div class="spread-latest-inner">
+      <h1 id="latest-heading" class="latest-label">Latest One Piece chapter</h1>
+
+      @if (latest(); as chapter) {
+        <p class="latest-number">{{ chapter.number }}</p>
+        <p class="latest-title">{{ chapter.title || 'Untitled chapter' }}</p>
+        <div class="latest-meta">
+          <span class="mw-muted">Out since {{ chapter.extractedAt }}</span>
+          @if (isNew()) {
+            <span class="stamp">New this week</span>
+          }
+        </div>
+        @if (isAdmin() && chapter.url) {
+          <a class="mw-btn mw-btn-primary latest-read" [href]="chapter.url" target="_blank" rel="noopener">
+            Read chapter {{ chapter.number }}
+          </a>
+        }
+      } @else if (loading()) {
+        <p class="latest-number latest-number-empty" aria-hidden="true">...</p>
+        <p class="mw-muted" role="status">Loading the latest release</p>
+      } @else {
+        <p class="latest-number latest-number-empty" aria-hidden="true">?</p>
+        <p class="latest-title">No chapters saved yet</p>
+        <p class="mw-muted">The checker adds them here as it finds them on the site.</p>
+      }
+    </div>
+  </div>
+
+  <div class="spread-next">
+    <div class="spread-next-inner mw-screentone">
+      <div class="whisper">
+        <svg class="whisper-shape" viewBox="0 0 200 140" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            d="M100 8C155 8 192 32 192 64C192 96 155 120 100 120C89 120 79 119 70 117L30 136L47 110C23 100 8 83 8 64C8 32 45 8 100 8Z"
+          />
+        </svg>
+        <p class="whisper-text">
+          Psst... chapter <span class="whisper-number">{{ nextNumber() }}</span> hasn't dropped yet.
+        </p>
+      </div>
+      <p class="mw-narration">It shows up here as soon as the checker finds it on the site.</p>
+    </div>
+  </div>
+</section>

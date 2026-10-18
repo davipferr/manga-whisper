@@ -1,56 +1,28 @@
-import { Component, signal, computed } from '@angular/core';
-import { inject } from "@angular/core";
-import { NavigationEnd, Router } from '@angular/router';
-import { AuthService } from "../../core/auth.service";
-import { startWith } from 'rxjs/internal/operators/startWith';
-import { map } from 'rxjs/internal/operators/map';
-import { filter } from 'rxjs/internal/operators/filter';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-header',
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './header.html',
-  styleUrls: ['./header.css'],
+  styleUrl: './header.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  readonly title = signal<string>('Manga Whisper');
   readonly isAdmin = this.authService.hasAdminRole;
-  readonly adminName = computed(() => this.authService?.userData()?.fullName ?? 'Admin');
-
-  private readonly currentUrl = toSignal(
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      map(() => this.router.url),
-      startWith(this.router.url)
-    ),
-    { initialValue: this.router.url }
-  );
-
-  readonly currentRouteIsAdminPanel = computed<boolean>(() => this.currentUrl() === '/admin-panel');
+  readonly adminName = computed(() => this.authService.userData()?.fullName ?? 'Admin');
 
   logout(): void {
     this.authService.logout().subscribe({
-      next: () => {
-        if (this.currentRouteIsAdminPanel()) {
-          this.router.navigate(['/admin']);
-        }
+      next: () => this.router.navigate(['/']),
+      error: (err) => {
+        console.error('Logout failed', err);
+        this.router.navigate(['/']);
       },
-      error: (err) => console.error('Logout failed', err)
     });
-  }
-
-  goToLogin(): void {
-    this.router.navigate(['/admin']);
-  }
-
-  goToHome(): void {
-    this.router.navigate(['/']);
-  }
-
-  goToPanel(): void {
-    this.router.navigate(['/admin-panel']);
   }
 }

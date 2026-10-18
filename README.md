@@ -77,3 +77,25 @@ Useful for debugging with breakpoints or `ng serve` hot reload. Keep the `db` co
 
 - **API**: copy `back-end/MangaWhisper.Api/.env.example` to `.env`, then `dotnet run` inside `back-end/MangaWhisper.Api` (listens on http://localhost:5065).
 - **Front-end**: `npm install && npm start` inside `front-end` (http://localhost:4200, calls the API at http://localhost:5065). Stop the `front-end` container first, since it uses the same port.
+
+## 🤖 Agent skills
+
+[Agent Skills](https://www.skills.sh/) for Claude Code (`.claude/skills/`) and Codex / GitHub Copilot (`.agents/skills/`), installed with the `skills` CLI and listed in `skills-lock.json`:
+
+| Skill | Source | Use it for |
+| --- | --- | --- |
+| `frontend-design` | `anthropics/skills` | Giving the screens a distinctive visual design |
+| `web-design-guidelines` | `vercel-labs/agent-skills` | Reviewing UI/UX and accessibility |
+| `angular-developer` | `angular/skills` | Angular code and best practices (official) |
+| `dotnet-webapi` | `dotnet/skills` | ASP.NET Core Web API endpoints (official) |
+| `optimizing-ef-core-queries` | `dotnet/skills` | Reviewing EF Core queries and repositories (official) |
+| `postgresql-optimization` | `github/awesome-copilot` | PostgreSQL schema and SQL |
+| `find-skills` | `vercel-labs/skills` | Finding more skills on skills.sh |
+
+To add another one (installs copies, so the skills work right after a clone):
+
+```bash
+npx skills add <owner/repo> --skill <name> --agent claude-code codex --copy --yes
+```
+
+Update them with `npx skills update --project --yes`.

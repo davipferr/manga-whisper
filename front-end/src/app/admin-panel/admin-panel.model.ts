@@ -1,16 +1,32 @@
-export interface MangaCheckerResponseDto {
+// Values of MangaWhisper.Common.Enums.MangaCheckerStatus, sent as strings by the API
+export type CheckerStatus = 'Stopped' | 'Idle' | 'Checking' | 'Error';
+
+export interface AdminChecker {
   id: number;
   mangaId: number;
-  checkerUrl: string;
-  chapterSelector: string;
-  titleSelector: string;
-  urlSelector: string;
+  mangaTitle: string;
+  siteIdentifier: string;
+  isActive: boolean;
+  status: CheckerStatus;
+  lastKnownChapter: number;
+  lastCheckedAt: string | null;
+  storedChapters: number;
+}
+
+export interface AdminCheckerListResponseDto {
+  checkers: AdminChecker[];
   success: boolean;
   errorMessage?: string;
 }
 
-export interface MangaCheckerListResponseDto {
-  mangaCheckers: MangaCheckerResponseDto[];
+export interface AdminCheckerResultDto {
+  checker?: AdminChecker;
   success: boolean;
+  notFound: boolean;
   errorMessage?: string;
+}
+
+export interface UpdateCheckerRequestDto {
+  isActive?: boolean;
+  lastKnownChapter?: number;
 }

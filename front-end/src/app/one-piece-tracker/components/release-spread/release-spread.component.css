@@ -1,0 +1,142 @@
+/* Two panels split by one slanted gutter, the way a manga page cuts between frames */
+.spread {
+  --slant: 64px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+  gap: var(--mw-gutter);
+}
+
+.spread-latest,
+.spread-next {
+  background: var(--mw-ink);
+  padding: var(--mw-rule);
+}
+
+.spread-latest {
+  margin-right: calc(var(--slant) * -1);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--slant)) 100%, 0 100%);
+}
+
+.spread-latest-inner {
+  height: 100%;
+  padding: clamp(20px, 4vw, 40px);
+  padding-right: calc(var(--slant) + 32px);
+  background: var(--mw-paper-raised);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--slant) + 1px) 100%, 0 100%);
+}
+
+.spread-next {
+  clip-path: polygon(var(--slant) 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.spread-next-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  padding: 28px 24px 28px calc(var(--slant) + 8px);
+  clip-path: polygon(calc(var(--slant) - 1px) 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.latest-label {
+  font-family: var(--mw-font-body);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0;
+  color: var(--mw-text);
+  margin: 0;
+}
+
+.latest-number {
+  font-family: var(--mw-font-display);
+  font-size: clamp(5.5rem, 15vw, 10.5rem);
+  line-height: 0.9;
+  color: var(--mw-ink);
+  margin: 4px 0 12px -0.04em;
+}
+
+.latest-number-empty { color: var(--mw-tone); }
+
+.latest-title {
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  font-weight: 700;
+  color: var(--mw-ink);
+  max-width: 30ch;
+  margin-bottom: 8px;
+}
+
+.latest-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.stamp {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 2px solid var(--mw-red);
+  color: var(--mw-red);
+  font-weight: 700;
+  font-size: 0.85rem;
+  transform: rotate(-4deg);
+}
+
+.latest-read { margin-top: 24px; }
+
+.whisper {
+  position: relative;
+  padding: 30px 30px 50px;
+  animation: whisper-in 420ms 300ms cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+
+.whisper-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.whisper-shape path {
+  fill: var(--mw-paper-raised);
+  stroke: var(--mw-ink);
+  stroke-width: 2.5;
+  stroke-dasharray: 9 7;
+  vector-effect: non-scaling-stroke;
+}
+
+.whisper-text {
+  position: relative;
+  margin: 0;
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1.45;
+  color: var(--mw-ink);
+}
+
+.whisper-number {
+  font-family: var(--mw-font-display);
+  font-size: 1.5rem;
+}
+
+@keyframes whisper-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 767.98px) {
+  .spread { grid-template-columns: 1fr; }
+
+  .spread-latest,
+  .spread-next,
+  .spread-latest-inner,
+  .spread-next-inner {
+    clip-path: none;
+    margin-right: 0;
+  }
+
+  .spread-latest-inner { padding-right: 24px; }
+  .spread-next-inner { padding-left: 24px; }
+}

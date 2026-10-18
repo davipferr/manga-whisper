@@ -1,0 +1,8 @@
+<app-release-spread
+  [latest]="chapterService.latestChapter()"
+  [nextNumber]="chapterService.nextChapterNumber()"
+  [loading]="chapterService.loading()"
+  [isAdmin]="isAdmin()"
+/>
+
+<app-recent-chapters [chapters]="chapterService.recentChapters()" [isAdmin]="isAdmin()" />
