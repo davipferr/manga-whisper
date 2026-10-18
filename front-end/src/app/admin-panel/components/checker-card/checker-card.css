@@ -1,0 +1,96 @@
+.checker {
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.checker-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.checker-head h3 {
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  margin: 0;
+}
+
+.checker-site { margin: 4px 0 0; font-size: 0.9rem; }
+
+/* Status: shape and fill change with state, not just color */
+.status {
+  padding: 4px 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 2px solid var(--mw-ink);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.status-idle { background: var(--mw-paper-raised); }
+.status-checking { background: var(--mw-straw); }
+.status-error { background: var(--mw-red); color: #fff; }
+.status-stopped { border-style: dashed; color: var(--mw-text-muted); }
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin: 20px 0;
+  border-top: 2px solid var(--mw-ink);
+  border-bottom: 2px solid var(--mw-ink);
+}
+
+.fact { padding: 12px 0; }
+.fact + .fact { padding-left: 16px; border-left: 1px solid var(--mw-tone); }
+
+.fact dt {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--mw-text-muted);
+}
+
+.fact dd {
+  margin: 2px 0 0;
+  font-weight: 700;
+  color: var(--mw-ink);
+}
+
+.fact-number {
+  font-family: var(--mw-font-display);
+  font-weight: 400 !important;
+  font-size: 1.9rem;
+  line-height: 1.1;
+}
+
+.checker-alert { margin-bottom: 20px; }
+
+.checker-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.field-label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--mw-ink);
+}
+
+.checker-actions .mw-btn { align-self: flex-start; }
+
+.chapter-form-row { display: flex; gap: 8px; }
+.chapter-form-row .mw-input { width: 8.5rem; }
+.hint { font-size: 0.85rem; }
+
+.feedback {
+  min-height: 1.5em;
+  margin: 14px 0 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+@media (max-width: 575.98px) {
+  .fact + .fact { padding-left: 0; border-left: 0; border-top: 1px solid var(--mw-tone); }
+}

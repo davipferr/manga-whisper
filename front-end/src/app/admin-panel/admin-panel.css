@@ -1,0 +1,42 @@
+.panel-head {
+  max-width: 64ch;
+  margin-bottom: clamp(24px, 5vw, 40px);
+}
+
+.panel-head h1 {
+  font-size: clamp(2rem, 6vw, 3rem);
+  margin-bottom: 8px;
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-head h2 { margin: 0; }
+
+.load-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.load-error p { margin: 0; }
+
+.checker-grid {
+  display: grid;
+  gap: var(--mw-gutter);
+}
+
+.chapters-section {
+  margin-top: clamp(40px, 7vw, 64px);
+}
+
+.manga-picker { min-width: 220px; }

@@ -1,7 +1,27 @@
-/* Esse componente é ViewEncapsulation.None, cuidado ao adicionar estilos aqui */
+.login {
+  max-width: 440px;
+  margin: clamp(16px, 6vh, 64px) auto 0;
+}
 
-main {
+.login-strip {
+  height: 56px;
+  border-bottom: var(--mw-rule) solid var(--mw-ink);
+}
+
+.login-body {
+  padding: clamp(20px, 5vw, 36px);
+}
+
+.login-body h1 {
+  font-size: clamp(1.4rem, 4vw, 1.75rem);
+  margin-bottom: 8px;
+}
+
+.login-form {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 18px;
+  margin-top: 24px;
 }
+
+.login-form .mw-error { margin: 0; }
