@@ -21,6 +21,9 @@ public class JobRunConfiguration : IEntityTypeConfiguration<JobRun>
         builder.Property(r => r.RequestedAt)
             .IsRequired();
 
+        builder.Property(r => r.ResultMessage)
+            .HasMaxLength(1000);
+
         builder.Property(r => r.ErrorMessage)
             .HasMaxLength(1000);
 

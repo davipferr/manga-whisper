@@ -13,6 +13,8 @@ public class JobRunResponseDto
     public DateTime? StartedAt { get; set; }
     public DateTime? FinishedAt { get; set; }
     public int ChaptersFound { get; set; }
+    // What a successful run found; failed and cancelled runs explain themselves in ErrorMessage
+    public string? ResultMessage { get; set; }
     public string? ErrorMessage { get; set; }
 }
 
@@ -37,6 +39,8 @@ public class WorkerStatusResponseDto
     public bool IsOnline { get; set; }
     public DateTime? LastSeenAt { get; set; }
     public DateTime? StartedAt { get; set; }
+    // The run the worker is executing; null while it is idle or not running
+    public JobRunResponseDto? CurrentRun { get; set; }
     public bool Success { get; set; }
     public string? ErrorMessage { get; set; }
 }

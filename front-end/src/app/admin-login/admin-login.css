@@ -25,3 +25,18 @@
 }
 
 .login-form .mw-error { margin: 0; }
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.remember input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--mw-red);
+}

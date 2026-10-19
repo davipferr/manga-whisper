@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using MangaWhisper.Application.Mappers;
 using MangaWhisper.Common.DTOs.Responses.Admin;
 using MangaWhisper.Domain.Repositories;
 
@@ -11,11 +12,16 @@ public class GetWorkerStatusQueryHandler : IRequestHandler<GetWorkerStatusQuery,
     private static readonly TimeSpan OfflineAfter = TimeSpan.FromSeconds(90);
 
     private readonly IWorkerHeartbeatRepository _workerHeartbeatRepository;
+    private readonly IJobRunRepository _jobRunRepository;
     private readonly ILogger<GetWorkerStatusQueryHandler> _logger;
 
-    public GetWorkerStatusQueryHandler(IWorkerHeartbeatRepository workerHeartbeatRepository, ILogger<GetWorkerStatusQueryHandler> logger)
+    public GetWorkerStatusQueryHandler(
+        IWorkerHeartbeatRepository workerHeartbeatRepository,
+        IJobRunRepository jobRunRepository,
+        ILogger<GetWorkerStatusQueryHandler> logger)
     {
         _workerHeartbeatRepository = workerHeartbeatRepository;
+        _jobRunRepository = jobRunRepository;
         _logger = logger;
     }
 
@@ -24,12 +30,17 @@ public class GetWorkerStatusQueryHandler : IRequestHandler<GetWorkerStatusQuery,
         try
         {
             var heartbeat = await _workerHeartbeatRepository.GetAsync(cancellationToken);
+            var isOnline = heartbeat != null && heartbeat.StoppedAt == null && DateTime.UtcNow - heartbeat.LastSeenAt < OfflineAfter;
+
+            // A Running run left behind by a crashed worker is not shown; the worker fails it when it starts again
+            var currentRun = isOnline ? await _jobRunRepository.GetRunningAsync(cancellationToken) : null;
 
             return new WorkerStatusResponseDto
             {
-                IsOnline = heartbeat != null && DateTime.UtcNow - heartbeat.LastSeenAt < OfflineAfter,
+                IsOnline = isOnline,
                 LastSeenAt = heartbeat?.LastSeenAt,
                 StartedAt = heartbeat?.StartedAt,
+                CurrentRun = currentRun != null ? AdminJobMapper.ToDto(currentRun) : null,
                 Success = true
             };
         }

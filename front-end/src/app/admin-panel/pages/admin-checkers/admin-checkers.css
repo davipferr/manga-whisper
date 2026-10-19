@@ -29,9 +29,3 @@
   display: grid;
   gap: var(--mw-gutter);
 }
-
-.chapters-section {
-  margin-top: clamp(40px, 7vw, 64px);
-}
-
-.manga-picker { min-width: 220px; }

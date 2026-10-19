@@ -80,6 +80,7 @@ export interface JobRun {
   startedAt: string | null;
   finishedAt: string | null;
   chaptersFound: number;
+  resultMessage: string | null;
   errorMessage: string | null;
 }
 
@@ -101,6 +102,7 @@ export interface WorkerStatusResponseDto {
   isOnline: boolean;
   lastSeenAt: string | null;
   startedAt: string | null;
+  currentRun: JobRun | null;
   success: boolean;
   errorMessage?: string;
 }

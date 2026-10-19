@@ -28,7 +28,9 @@ export class AuthService {
   readonly userData = this._userData.asReadonly();
   readonly isAuthenticated = computed(() => this._userData() !== null && this.isTokenValid());
   readonly userRoles = computed(() => this._userData()?.roles ?? []);
-  readonly hasAdminRole = computed(() => this.userRoles().some((role: string) => role.toUpperCase() === 'ADMIN'));
+  readonly hasAdminRole = computed(
+    () => this.isAuthenticated() && this.userRoles().some((role: string) => role.toUpperCase() === 'ADMIN')
+  );
 
   saveAuthData(loginResponse: LoginResponseDto): void {
     localStorage.setItem(this.tokenKey, loginResponse.token);

@@ -1,5 +1,6 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -7,19 +8,23 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = authService.getToken();
 
   // Don't add token to login endpoint
-  if (req.url.includes('/auth/login')) {
+  if (req.url.includes('/auth/login') || !token) {
     return next(req);
   }
 
-  // Add token if available
-  if (token) {
-    const cloned = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    return next(cloned);
-  }
+  const cloned = req.clone({
+    setHeaders: {
+      Authorization: `Bearer ${token}`
+    }
+  });
 
-  return next(req);
+  return next(cloned).pipe(
+    catchError((error: unknown) => {
+      // The token expired or was revoked: forget the session so the UI stops showing admin features
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        authService.clearAuthData();
+      }
+      return throwError(() => error);
+    })
+  );
 };

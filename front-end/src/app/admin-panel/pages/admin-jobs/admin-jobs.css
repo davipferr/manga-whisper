@@ -133,7 +133,7 @@
 .run-failed { background: var(--mw-red); color: #fff; }
 .run-cancelled { border-style: dotted; color: var(--mw-text-muted); }
 
-.run-error { display: block; margin-top: 4px; font-size: 0.8rem; max-width: 40ch; }
+.run-result { min-width: 24ch; max-width: 40ch; }
 
 @media (max-width: 575.98px) {
   .fact + .fact { padding-left: 0; border-left: 0; border-top: 1px solid var(--mw-tone); }

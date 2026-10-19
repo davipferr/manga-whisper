@@ -35,16 +35,24 @@
   gap: 8px 12px;
 }
 
+.admin-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-badge {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mw-paper-raised);
+  background: var(--mw-ink);
+  border-radius: 3px;
+}
+
 .admin-name {
   font-size: 0.9rem;
   color: var(--mw-text-muted);
-}
-
-.is-current {
-  background: var(--mw-ink);
-  color: var(--mw-paper-raised);
-}
-
-.is-current:hover {
-  color: var(--mw-ink);
 }

@@ -27,6 +27,18 @@ public class JobRunRepository : IJobRunRepository
             .ToListAsync(cancellationToken);
     }
 
+    // The worker executes one run at a time
+    public async Task<JobRun?> GetRunningAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.JobRuns
+            .AsNoTracking()
+            .Include(r => r.MangaChecker)
+                .ThenInclude(mc => mc.Manga)
+            .Where(r => r.Status == JobRunStatus.Running)
+            .OrderByDescending(r => r.StartedAt)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<bool> HasOpenRunForCheckerAsync(int mangaCheckerId, CancellationToken cancellationToken = default)
     {
         return await _context.JobRuns

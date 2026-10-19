@@ -31,7 +31,8 @@ public class GetChaptersQueryHandler : IRequestHandler<GetChaptersQuery, Chapter
             {
                 Number = chapter.Number,
                 Title = chapter.Title,
-                Url = chapter.Url,
+                // Reading links are an admin-only feature, so other callers never receive them
+                Url = request.IncludeReadUrl ? chapter.Url : string.Empty,
                 ExtractedAt = chapter.ExtractedAt.ToString("dd/MM/yyyy")
             }).ToList();
 

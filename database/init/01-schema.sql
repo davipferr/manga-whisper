@@ -81,6 +81,8 @@ CREATE TABLE "JobRuns" (
     "StartedAt"      timestamp with time zone NULL,
     "FinishedAt"     timestamp with time zone NULL,
     "ChaptersFound"  integer NOT NULL DEFAULT 0,
+    -- What a successful run found, e.g. "Chapter 1992 is not released yet"
+    "ResultMessage"  character varying(1000) NULL,
     "ErrorMessage"   character varying(1000) NULL
 );
 
@@ -88,11 +90,13 @@ CREATE INDEX "IX_JobRuns_Status_RequestedAt" ON "JobRuns" ("Status", "RequestedA
 CREATE INDEX "IX_JobRuns_MangaCheckerId" ON "JobRuns" ("MangaCheckerId");
 CREATE INDEX "IX_JobRuns_ScrapingJobId" ON "JobRuns" ("ScrapingJobId");
 
--- Single row (Id = 1) the worker updates periodically, so the admin panel can tell if it is running
+-- Single row (Id = 1) the worker updates periodically, so the admin panel can tell if it is running.
+-- "StoppedAt" is set when the worker shuts down cleanly and cleared on its next beat.
 CREATE TABLE "WorkerHeartbeats" (
     "Id"         integer PRIMARY KEY,
     "LastSeenAt" timestamp with time zone NOT NULL,
-    "StartedAt"  timestamp with time zone NOT NULL
+    "StartedAt"  timestamp with time zone NOT NULL,
+    "StoppedAt"  timestamp with time zone NULL
 );
 
 -- ---------------------------------------------------------------------------

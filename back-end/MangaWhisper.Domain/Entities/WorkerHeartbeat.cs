@@ -10,4 +10,6 @@ public class WorkerHeartbeat
     public int Id { get; set; }
     public DateTime LastSeenAt { get; set; }
     public DateTime StartedAt { get; set; }
+    // Set when the worker shuts down cleanly, cleared by its next beat
+    public DateTime? StoppedAt { get; set; }
 }

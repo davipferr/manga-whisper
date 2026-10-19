@@ -53,8 +53,9 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Invalid email or password." });
         }
 
-        var token = await GenerateJwtToken(user);
-        var expiresAt = DateTime.UtcNow.AddHours(24);
+        // "Keep me signed in" gets a long-lived token so the admin does not have to sign in every day
+        var expiresAt = request.RememberMe ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddHours(8);
+        var token = await GenerateJwtToken(user, expiresAt);
         var userRoles = await _userManager.GetRolesAsync(user);
 
         return Ok(new LoginResponseDto
@@ -74,7 +75,7 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Logged out successfully." });
     }
 
-    private async Task<string> GenerateJwtToken(ApplicationUser user)
+    private async Task<string> GenerateJwtToken(ApplicationUser user, DateTime expiresAt)
     {
         var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
                        ?? throw new InvalidOperationException("JWT_SECRET environment variable not found.");
@@ -108,7 +109,7 @@ public class AuthController : ControllerBase
             issuer: jwtIssuer,
             audience: jwtAudience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(24),
+            expires: expiresAt,
             signingCredentials: credentials
         );
 

@@ -17,6 +17,7 @@ public class JobRun
     public DateTime? StartedAt { get; set; }
     public DateTime? FinishedAt { get; set; }
     public int ChaptersFound { get; set; }
+    public string? ResultMessage { get; set; }
     public string? ErrorMessage { get; set; }
 
     public virtual MangaChecker MangaChecker { get; set; } = null!;

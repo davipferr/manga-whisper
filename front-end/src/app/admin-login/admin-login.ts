@@ -26,6 +26,7 @@ export class AdminLoginComponent {
   readonly loginForm = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
+    rememberMe: [true],
   });
 
   constructor() {
@@ -52,7 +53,7 @@ export class AdminLoginComponent {
     this.adminLoginService.login(this.loginForm.getRawValue()).subscribe({
       next: (response: LoginResponseDto) => {
         this.authService.saveAuthData(response);
-        this.router.navigate(['/admin-panel']);
+        this.router.navigate(['/']);
       },
       error: (error: HttpErrorResponse) => {
         this.submitting.set(false);

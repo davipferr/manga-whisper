@@ -1,17 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../shared/core/auth.service';
 import { AdminPanelApiService } from '../../admin-panel-api.service';
 import { AdminChecker } from '../../admin-panel.model';
 import { CheckerCardComponent } from '../../components/checker-card/checker-card';
-import { AdminChaptersComponent } from '../../components/admin-chapters/admin-chapters';
 
 @Component({
   selector: 'app-admin-checkers',
   templateUrl: './admin-checkers.html',
   styleUrl: './admin-checkers.css',
-  imports: [CheckerCardComponent, AdminChaptersComponent],
+  imports: [CheckerCardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminCheckersComponent implements OnInit {
@@ -22,10 +21,6 @@ export class AdminCheckersComponent implements OnInit {
   readonly checkers = signal<AdminChecker[]>([]);
   readonly loading = signal(false);
   readonly loadError = signal<string | null>(null);
-
-  readonly mangaTitles = computed(() => [...new Set(this.checkers().map((c) => c.mangaTitle))]);
-  private readonly pickedManga = signal<string | null>(null);
-  readonly selectedManga = computed(() => this.pickedManga() ?? this.mangaTitles()[0] ?? '');
 
   ngOnInit(): void {
     this.loadCheckers();
@@ -64,9 +59,5 @@ export class AdminCheckersComponent implements OnInit {
   onUnauthorized(): void {
     this.authService.clearAuthData();
     this.router.navigate(['/admin']);
-  }
-
-  selectManga(event: Event): void {
-    this.pickedManga.set((event.target as HTMLSelectElement).value);
   }
 }

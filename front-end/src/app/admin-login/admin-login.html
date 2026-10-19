@@ -2,8 +2,8 @@
   <div class="login-strip mw-screentone" aria-hidden="true"></div>
 
   <div class="login-body">
-    <h1 id="login-heading">Sign in to the control panel</h1>
-    <p class="mw-muted">Pause the chapter checker, fix the last known chapter and see what has been saved.</p>
+    <h1 id="login-heading">Sign in</h1>
+    <p class="mw-muted">Admins can read chapters from the home page and manage the checkers and jobs in the control panel.</p>
 
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()" novalidate class="login-form">
       <div class="mw-field">
@@ -37,6 +37,11 @@
           <span id="password-error" class="mw-error">Enter the password.</span>
         }
       </div>
+
+      <label class="remember">
+        <input type="checkbox" formControlName="rememberMe" />
+        Keep me signed in for 30 days
+      </label>
 
       @if (loginError(); as message) {
         <p class="mw-error" role="alert">{{ message }}</p>

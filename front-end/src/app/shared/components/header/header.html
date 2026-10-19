@@ -6,11 +6,20 @@
 
   @if (isAdmin()) {
     <nav class="admin-nav" aria-label="Admin">
-      <span class="admin-name">Signed in as {{ adminName() }}</span>
-      <a class="mw-btn" routerLink="/admin-panel" routerLinkActive="is-current" ariaCurrentWhenActive="page">
-        Control panel
-      </a>
+      <span class="admin-identity">
+        <span class="admin-badge">Admin</span>
+        <span class="admin-name">{{ adminName() }}</span>
+      </span>
+      @if (inAdminPanel()) {
+        <a class="mw-btn" routerLink="/">Back to home</a>
+      } @else {
+        <a class="mw-btn mw-btn-primary" routerLink="/admin-panel">Admin panel</a>
+      }
       <button type="button" class="mw-btn mw-btn-quiet" (click)="logout()">Sign out</button>
+    </nav>
+  } @else if (!onLoginPage()) {
+    <nav class="admin-nav" aria-label="Account">
+      <a class="mw-btn mw-btn-quiet" routerLink="/admin">Sign in</a>
     </nav>
   }
 </header>

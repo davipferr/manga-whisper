@@ -31,22 +31,3 @@
   </div>
 </section>
 
-@if (mangaTitles().length > 0) {
-  <section class="chapters-section" aria-labelledby="saved-heading">
-    <div class="section-head">
-      <h2 id="saved-heading">Saved chapters</h2>
-      @if (mangaTitles().length > 1) {
-        <div class="mw-field manga-picker">
-          <label for="manga-picker">Manga</label>
-          <select id="manga-picker" class="mw-input" [value]="selectedManga()" (change)="selectManga($event)">
-            @for (title of mangaTitles(); track title) {
-              <option [value]="title">{{ title }}</option>
-            }
-          </select>
-        </div>
-      }
-    </div>
-
-    <app-admin-chapters [mangaTitle]="selectedManga()" />
-  </section>
-}

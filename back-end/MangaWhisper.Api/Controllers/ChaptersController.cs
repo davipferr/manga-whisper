@@ -35,7 +35,8 @@ public class ChaptersController : ControllerBase
             {
                 Page = page,
                 PageSize = pageSize,
-                MangaTitle = mangaTitle
+                MangaTitle = mangaTitle,
+                IncludeReadUrl = User.IsInRole("ADMIN")
             };
             var result = await _mediator.Send(query);
 

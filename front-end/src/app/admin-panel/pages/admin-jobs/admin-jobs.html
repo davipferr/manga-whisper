@@ -110,6 +110,7 @@
             <th scope="col">Started by</th>
             <th scope="col">Status</th>
             <th scope="col">Chapters</th>
+            <th scope="col">Result</th>
             <th scope="col">Finished</th>
           </tr>
         </thead>
@@ -122,11 +123,11 @@
               <td>{{ run.scrapingJobId ? 'Job #' + run.scrapingJobId : 'Run now' }}</td>
               <td>
                 <span [class]="'run-status run-' + run.status.toLowerCase()">{{ runStatusText[run.status] }}</span>
-                @if (run.errorMessage) {
-                  <span class="run-error mw-muted">{{ run.errorMessage }}</span>
-                }
               </td>
               <td class="number">{{ run.chaptersFound }}</td>
+              <td class="run-result" [class.mw-error]="run.status === 'Failed'">
+                {{ run.errorMessage ?? run.resultMessage ?? '-' }}
+              </td>
               <td>{{ run.finishedAt ? (run.finishedAt | date: 'd MMM, HH:mm:ss') : '-' }}</td>
             </tr>
           }

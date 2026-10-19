@@ -36,6 +36,7 @@ public static class AdminJobMapper
             StartedAt = run.StartedAt,
             FinishedAt = run.FinishedAt,
             ChaptersFound = run.ChaptersFound,
+            ResultMessage = run.ResultMessage,
             ErrorMessage = run.ErrorMessage
         };
     }

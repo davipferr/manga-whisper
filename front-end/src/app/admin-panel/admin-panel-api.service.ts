@@ -2,7 +2,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { ChaptersListResponseDto } from '../one-piece-tracker/models/api.model';
 import {
   AdminCheckerListResponseDto,
   AdminCheckerResultDto,
@@ -58,14 +57,5 @@ export class AdminPanelApiService {
 
   getWorkerStatus(): Observable<WorkerStatusResponseDto> {
     return this.http.get<WorkerStatusResponseDto>(`${this.apiUrl}/admin/worker-status`);
-  }
-
-  getChapters(mangaTitle: string, page: number, pageSize: number): Observable<ChaptersListResponseDto> {
-    const params = new HttpParams()
-      .set('page', page)
-      .set('pageSize', pageSize)
-      .set('mangaTitle', mangaTitle);
-
-    return this.http.get<ChaptersListResponseDto>(`${this.apiUrl}/chapters`, { params });
   }
 }
