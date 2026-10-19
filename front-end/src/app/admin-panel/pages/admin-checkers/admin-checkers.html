@@ -1,0 +1,52 @@
+<p class="mw-muted page-intro">
+  Set the last known chapter before you run anything: every check looks for the chapter after it.
+  Pausing a checker makes its scheduled jobs skip it; "Run now" still works.
+</p>
+
+<section aria-labelledby="checkers-heading">
+  <div class="section-head">
+    <h2 id="checkers-heading">Checkers</h2>
+    <button type="button" class="mw-btn" (click)="loadCheckers()" [disabled]="loading()">
+      {{ loading() ? 'Refreshing' : 'Refresh' }}
+    </button>
+  </div>
+
+  @if (loadError(); as error) {
+    <div class="mw-narration load-error" role="alert">
+      <p>{{ error }}</p>
+      <button type="button" class="mw-btn" (click)="loadCheckers()">Try again</button>
+    </div>
+  }
+
+  <div class="checker-grid" [attr.aria-busy]="loading()">
+    @for (checker of checkers(); track checker.id) {
+      <app-checker-card [checker]="checker" (updated)="onCheckerUpdated($event)" (unauthorized)="onUnauthorized()" />
+    } @empty {
+      @if (!loading() && !loadError()) {
+        <p class="mw-muted">
+          No checkers yet. Add a manga and its checker in <code>database/init/02-seed.sql</code>.
+        </p>
+      }
+    }
+  </div>
+</section>
+
+@if (mangaTitles().length > 0) {
+  <section class="chapters-section" aria-labelledby="saved-heading">
+    <div class="section-head">
+      <h2 id="saved-heading">Saved chapters</h2>
+      @if (mangaTitles().length > 1) {
+        <div class="mw-field manga-picker">
+          <label for="manga-picker">Manga</label>
+          <select id="manga-picker" class="mw-input" [value]="selectedManga()" (change)="selectManga($event)">
+            @for (title of mangaTitles(); track title) {
+              <option [value]="title">{{ title }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+
+    <app-admin-chapters [mangaTitle]="selectedManga()" />
+  </section>
+}

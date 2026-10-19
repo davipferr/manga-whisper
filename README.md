@@ -6,11 +6,11 @@ A voz suave que te conta quando chega um capítulo
 | Service | Source | Role |
 | --- | --- | --- |
 | `front-end` | `front-end/` (Angular) | UI, served by nginx. `/api` is proxied to the API container |
-| `api` | `back-end/` (ASP.NET Core) | Reads chapters, authentication (JWT + Identity) |
-| `worker` | `../manga-whisper-background-worker` (separate repo) | Scrapes new chapters with Selenium and writes them to the database |
+| `api` | `back-end/` (ASP.NET Core) | Reads chapters, authentication (JWT + Identity), admin panel endpoints (checkers, scraping jobs) |
+| `worker` | `../manga-whisper-background-worker` (separate repo) | Executes the scraping jobs created in the admin panel (Selenium) and writes the chapters to the database |
 | `db` | `database/init/` (SQL) | PostgreSQL shared by `api` and `worker` |
 
-The API and the worker never call each other: they only share the database.
+The API and the worker never call each other: they only share the database. The API decides what to scrape (it writes jobs and "Run now" requests to the database) and the worker executes it.
 
 ## 🐳 Local setup (Docker)
 
@@ -27,7 +27,7 @@ The API and the worker never call each other: they only share the database.
 
 ### Step 1: Create the `.env` file
 
-In the root of this repo, make a copy of `.env.example` and rename it to `.env`. Adjust the values if you want (passwords, admin user, worker schedule).
+In the root of this repo, make a copy of `.env.example` and rename it to `.env`. Adjust the values if you want (passwords, admin user). There are no schedule settings: scraping is configured in the admin panel.
 
 ### Step 2: Start everything
 
@@ -42,6 +42,21 @@ docker compose up --build
 | http://localhost:5065/api/chapters | API (directly) |
 | http://localhost:5065/openapi/v1.json | OpenAPI document |
 | `localhost:5432` | PostgreSQL (for your DB client) |
+
+## ⏰ Scraping jobs (admin panel)
+
+Nothing is scraped when the containers start. Everything is configured in the **Control panel** (http://localhost:4200/admin-panel, admin only):
+
+1. **Checkers** tab: set the **last known chapter** of the manga. Every check looks for the chapter after it.
+2. **Checkers** tab: **Run now** queues a one-off run: *Check next chapter* (looks once for the next chapter) or *Backfill* (saves every chapter until one is missing).
+3. **Scheduled jobs** tab: create a recurring job, e.g. *Check next chapter* every Thursday at 12, 16 and 20 (BRT). The run history at the bottom shows every run, its result and how many chapters it saved.
+
+How it works:
+
+- Jobs are stored as cron expressions (`ScrapingJobs` table) and evaluated in BRT. The API computes the next run when a job is saved; the worker polls the database every 30 seconds, turns due jobs into runs (`JobRuns` table) and executes them one at a time.
+- The worker never catches up: if it is down at a scheduled time, that run is skipped, and runs requested while it was down are cancelled when it starts. Use **Run now** instead.
+- A paused checker is skipped by its scheduled jobs; **Run now** still works for it.
+- The panel shows whether the worker is running (it writes a heartbeat to `WorkerHeartbeats` every 30 seconds).
 
 ## 🗄️ Database (no migrations)
 

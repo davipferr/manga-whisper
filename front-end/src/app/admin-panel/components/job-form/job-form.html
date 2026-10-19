@@ -1,0 +1,99 @@
+<form class="job-form mw-panel" [formGroup]="form" (ngSubmit)="submit()" novalidate aria-labelledby="job-form-title">
+  <h3 id="job-form-title">{{ isEdit() ? 'Edit job' : 'New job' }}</h3>
+
+  <div class="form-grid">
+    <div class="mw-field">
+      <label for="job-checker">Manga</label>
+      <select id="job-checker" class="mw-input" formControlName="mangaCheckerId">
+        @for (checker of checkers(); track checker.id) {
+          <option [ngValue]="checker.id">{{ checker.mangaTitle }} ({{ checker.siteIdentifier }})</option>
+        }
+      </select>
+    </div>
+
+    <fieldset class="mw-field">
+      <legend>What it does</legend>
+      @for (type of jobTypes; track type) {
+        <label class="choice">
+          <input type="radio" formControlName="type" [value]="type" />
+          <span>
+            <strong>{{ typeText[type] }}</strong>
+            <span class="mw-muted hint">{{ typeHint[type] }}</span>
+          </span>
+        </label>
+      }
+    </fieldset>
+
+    <fieldset class="mw-field">
+      <legend>Days</legend>
+      <div class="days">
+        @for (day of weekDays; track day.value) {
+          <button
+            type="button"
+            class="day"
+            [class.is-selected]="isDaySelected(day.value)"
+            [attr.aria-pressed]="isDaySelected(day.value)"
+            [attr.aria-label]="day.name"
+            (click)="toggleDay(day.value)"
+          >
+            {{ day.short }}
+          </button>
+        }
+      </div>
+    </fieldset>
+
+    <div class="time-row">
+      <div class="mw-field">
+        <label for="job-hours">Hours (BRT)</label>
+        <input
+          id="job-hours"
+          class="mw-input"
+          formControlName="hours"
+          inputmode="numeric"
+          placeholder="12, 16, 20"
+          [attr.aria-invalid]="parsedHours() === null"
+          aria-describedby="job-hours-hint"
+        />
+        <span class="mw-muted hint" id="job-hours-hint">0 to 23, separated by commas. Several hours retry the same day.</span>
+      </div>
+
+      <div class="mw-field minute-field">
+        <label for="job-minute">Minute</label>
+        <input
+          id="job-minute"
+          class="mw-input"
+          type="number"
+          min="0"
+          max="59"
+          inputmode="numeric"
+          formControlName="minute"
+          [attr.aria-invalid]="form.controls.minute.invalid"
+        />
+      </div>
+    </div>
+
+    <label class="choice">
+      <input type="checkbox" formControlName="isEnabled" />
+      <span><strong>Enabled</strong> <span class="mw-muted hint">A disabled job keeps its settings but never runs.</span></span>
+    </label>
+  </div>
+
+  <p class="mw-narration preview" aria-live="polite">
+    @if (preview(); as text) {
+      Runs {{ text }} (BRT). <code>{{ cron() }}</code>
+    } @else {
+      Pick at least one day and valid hours to see when it runs.
+    }
+  </p>
+
+  @if (error()) {
+    <p class="mw-error" role="alert">{{ error() }}</p>
+  }
+
+  <div class="form-actions">
+    <button type="submit" class="mw-btn mw-btn-primary" [disabled]="saving()">
+      {{ saving() ? 'Saving' : isEdit() ? 'Save changes' : 'Create job' }}
+    </button>
+    <button type="button" class="mw-btn mw-btn-quiet" (click)="cancelled.emit()" [disabled]="saving()">Cancel</button>
+  </div>
+</form>

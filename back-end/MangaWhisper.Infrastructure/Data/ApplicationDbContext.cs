@@ -13,6 +13,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Manga> Mangas { get; set; }
     public DbSet<MangaChecker> MangaCheckers { get; set; }
     public DbSet<Chapter> Chapters { get; set; }
+    public DbSet<ScrapingJob> ScrapingJobs { get; set; }
+    public DbSet<JobRun> JobRuns { get; set; }
+    public DbSet<WorkerHeartbeat> WorkerHeartbeats { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

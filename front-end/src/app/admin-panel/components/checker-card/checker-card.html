@@ -42,7 +42,7 @@
         {{ checker().isActive ? 'Pause checking' : 'Resume checking' }}
       </button>
       <span class="mw-muted hint" [id]="'checking-hint-' + checker().id">
-        {{ checker().isActive ? 'Runs on the worker schedule.' : 'The worker skips this manga until you resume it.' }}
+        {{ checker().isActive ? 'Scheduled jobs run for this manga.' : 'Scheduled jobs skip this manga until you resume it.' }}
       </span>
     </div>
 
@@ -69,6 +69,26 @@
         </span>
       </div>
     </form>
+  </div>
+
+  <div class="run-now" role="group" [attr.aria-labelledby]="'run-now-label-' + checker().id">
+    <span class="field-label" [id]="'run-now-label-' + checker().id">Run now</span>
+    <div class="run-now-buttons">
+      @for (type of jobTypes; track type) {
+        <button
+          type="button"
+          class="mw-btn"
+          (click)="runNow(type)"
+          [disabled]="saving() || checker().status === 'Checking'"
+          [attr.title]="typeHint[type]"
+        >
+          {{ typeText[type] }}
+        </button>
+      }
+    </div>
+    <span class="mw-muted hint">
+      Starts from chapter {{ checker().lastKnownChapter + 1 }}. Backfill saves every chapter until one is missing.
+    </span>
   </div>
 
   <p class="feedback" [class.mw-error]="feedbackIsError()" aria-live="polite">{{ feedback() }}</p>

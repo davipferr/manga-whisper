@@ -18,9 +18,6 @@ public class MangaCheckerConfiguration : IEntityTypeConfiguration<MangaChecker>
         builder.Property(mc => mc.LastKnownChapter)
             .IsRequired();
 
-        builder.Property(mc => mc.CheckIntervalMinutes)
-            .IsRequired();
-
         builder.Property(mc => mc.IsActive)
             .IsRequired();
 

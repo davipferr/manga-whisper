@@ -1,42 +1,48 @@
 .panel-head {
-  max-width: 64ch;
-  margin-bottom: clamp(24px, 5vw, 40px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: clamp(20px, 4vw, 32px);
 }
+
+.panel-head > div { max-width: 64ch; }
 
 .panel-head h1 {
   font-size: clamp(2rem, 6vw, 3rem);
   margin-bottom: 8px;
 }
 
-.section-head {
+.panel-head p { margin: 0; }
+
+/* Tabs sit on the ink rule like the tabs of a binder */
+.tabs {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 4px;
+  margin-bottom: clamp(24px, 4vw, 36px);
+  border-bottom: var(--mw-rule) solid var(--mw-ink);
 }
 
-.section-head h2 { margin: 0; }
-
-.load-error {
-  display: flex;
-  flex-wrap: wrap;
+.tab {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
+  min-height: 44px;
+  padding: 8px 18px;
+  margin-bottom: calc(-1 * var(--mw-rule));
+  font-weight: 700;
+  color: var(--mw-text-muted);
+  text-decoration: none;
+  border: var(--mw-rule) solid transparent;
+  border-bottom: 0;
 }
 
-.load-error p { margin: 0; }
+.tab:hover { color: var(--mw-ink); background: var(--mw-paper-raised); }
 
-.checker-grid {
-  display: grid;
-  gap: var(--mw-gutter);
+.tab.is-current {
+  color: var(--mw-ink);
+  background: var(--mw-paper);
+  border-color: var(--mw-ink);
+  border-bottom: var(--mw-rule) solid var(--mw-paper);
 }
-
-.chapters-section {
-  margin-top: clamp(40px, 7vw, 64px);
-}
-
-.manga-picker { min-width: 220px; }

@@ -48,13 +48,9 @@ services:
   worker:
     build:
       context: ../manga-whisper-background-worker
+    # Only needs the database: it executes the jobs the admin creates through the API
     environment:
       DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
-      CHECK_DAYS_OF_WEEK: ${CHECK_DAYS_OF_WEEK}
-      CHECK_START_HOUR: ${CHECK_START_HOUR}
-      CHECK_INTERVAL_HOURS: ${CHECK_INTERVAL_HOURS}
-      ENABLE_BATCH_SCRAPING: ${ENABLE_BATCH_SCRAPING}
-      STOP_APP_AFTER_BATCH_SCRAPING: ${STOP_APP_AFTER_BATCH_SCRAPING}
     # Headless Chromium needs more shared memory than Docker's 64MB default
     shm_size: 1gb
     depends_on:

@@ -1,0 +1,139 @@
+<p class="mw-muted page-intro">
+  Jobs run on the days and hours you pick, in BRT. If the worker is down at a scheduled time, that run is skipped
+  (it doesn't run when the worker starts again); use "Run now" on the Checkers tab instead.
+</p>
+
+<section aria-labelledby="jobs-heading">
+  <div class="section-head">
+    <h2 id="jobs-heading">Scheduled jobs</h2>
+    <div class="section-actions">
+      <button type="button" class="mw-btn" (click)="loadJobs()" [disabled]="loading()">
+        {{ loading() ? 'Refreshing' : 'Refresh' }}
+      </button>
+      <button
+        type="button"
+        class="mw-btn mw-btn-primary"
+        (click)="openNew()"
+        [disabled]="editing() !== null || checkers().length === 0"
+      >
+        New job
+      </button>
+    </div>
+  </div>
+
+  @if (loadError(); as error) {
+    <div class="mw-narration load-error" role="alert">
+      <p>{{ error }}</p>
+      <button type="button" class="mw-btn" (click)="loadJobs()">Try again</button>
+    </div>
+  }
+
+  @if (editing() !== null) {
+    <app-job-form
+      class="form-slot"
+      [checkers]="checkers()"
+      [job]="editedJob()"
+      (saved)="onSaved($event)"
+      (cancelled)="editing.set(null)"
+      (unauthorized)="onUnauthorized()"
+    />
+  }
+
+  <p class="feedback" [class.mw-error]="feedbackIsError()" aria-live="polite">{{ feedback() }}</p>
+
+  <div class="job-list" [attr.aria-busy]="loading()">
+    @for (job of jobs(); track job.id) {
+      <article class="job mw-panel" [class.is-disabled]="!job.isEnabled" [attr.aria-labelledby]="'job-title-' + job.id">
+        <header class="job-head">
+          <div>
+            <h3 [id]="'job-title-' + job.id">{{ job.mangaTitle }}: {{ typeText[job.type] }}</h3>
+            <p class="job-schedule">{{ describeCron(job.cronExpression) }} <span class="mw-muted">(BRT)</span></p>
+            <code class="mw-muted">{{ job.cronExpression }}</code>
+          </div>
+          <span class="status" [class.status-off]="!job.isEnabled">{{ job.isEnabled ? 'Enabled' : 'Disabled' }}</span>
+        </header>
+
+        <dl class="facts">
+          <div class="fact">
+            <dt>Next run</dt>
+            <dd>{{ job.nextRunAt ? (job.nextRunAt | date: 'EEE d MMM, HH:mm') : 'Not scheduled' }}</dd>
+          </div>
+          <div class="fact">
+            <dt>Last run</dt>
+            <dd>{{ job.lastRunAt ? (job.lastRunAt | date: 'EEE d MMM, HH:mm') : 'Never' }}</dd>
+          </div>
+        </dl>
+
+        <div class="job-actions">
+          <button type="button" class="mw-btn" (click)="toggleEnabled(job)" [disabled]="busyJobId() === job.id">
+            {{ job.isEnabled ? 'Disable' : 'Enable' }}
+          </button>
+          <button type="button" class="mw-btn" (click)="edit(job)" [disabled]="busyJobId() === job.id">Edit</button>
+          <button
+            type="button"
+            class="mw-btn"
+            [class.mw-btn-primary]="confirmDeleteId() === job.id"
+            (click)="delete(job)"
+            (blur)="confirmDeleteId.set(null)"
+            [disabled]="busyJobId() === job.id"
+          >
+            {{ confirmDeleteId() === job.id ? 'Click again to delete' : 'Delete' }}
+          </button>
+        </div>
+      </article>
+    } @empty {
+      @if (!loading() && !loadError()) {
+        <p class="mw-muted">No jobs yet, so nothing is scraped on a schedule. Create one with "New job".</p>
+      }
+    }
+  </div>
+</section>
+
+<section class="runs-section" aria-labelledby="runs-heading">
+  <div class="section-head">
+    <h2 id="runs-heading">Run history</h2>
+    <button type="button" class="mw-btn" (click)="loadRuns()">Refresh</button>
+  </div>
+
+  @if (runsError(); as error) {
+    <p class="mw-error" role="alert">{{ error }}</p>
+  }
+
+  @if (runs().length > 0) {
+    <div class="table-scroll">
+      <table class="runs">
+        <thead>
+          <tr>
+            <th scope="col">Requested</th>
+            <th scope="col">Manga</th>
+            <th scope="col">What</th>
+            <th scope="col">Started by</th>
+            <th scope="col">Status</th>
+            <th scope="col">Chapters</th>
+            <th scope="col">Finished</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (run of runs(); track run.id) {
+            <tr>
+              <td>{{ run.requestedAt | date: 'd MMM, HH:mm:ss' }}</td>
+              <td>{{ run.mangaTitle }}</td>
+              <td>{{ typeText[run.type] }}</td>
+              <td>{{ run.scrapingJobId ? 'Job #' + run.scrapingJobId : 'Run now' }}</td>
+              <td>
+                <span [class]="'run-status run-' + run.status.toLowerCase()">{{ runStatusText[run.status] }}</span>
+                @if (run.errorMessage) {
+                  <span class="run-error mw-muted">{{ run.errorMessage }}</span>
+                }
+              </td>
+              <td class="number">{{ run.chaptersFound }}</td>
+              <td>{{ run.finishedAt ? (run.finishedAt | date: 'd MMM, HH:mm:ss') : '-' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else if (!runsError()) {
+    <p class="mw-muted">No runs yet.</p>
+  }
+</section>

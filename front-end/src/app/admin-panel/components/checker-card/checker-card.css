@@ -84,6 +84,17 @@
 .chapter-form-row .mw-input { width: 8.5rem; }
 .hint { font-size: 0.85rem; }
 
+.run-now {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--mw-tone);
+}
+
+.run-now-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+
 .feedback {
   min-height: 1.5em;
   margin: 14px 0 0;

@@ -4,10 +4,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AdminPanelApiService } from '../../admin-panel-api.service';
-import { AdminChecker, CheckerStatus, UpdateCheckerRequestDto } from '../../admin-panel.model';
+import { AdminChecker, CheckerStatus, ScrapingJobType, UpdateCheckerRequestDto } from '../../admin-panel.model';
+import { JOB_TYPE_HINT, JOB_TYPE_TEXT } from '../../job-labels';
 
 const STATUS_TEXT: Record<CheckerStatus, string> = {
-  Idle: 'Waiting for the next check',
+  Idle: 'Ready',
   Checking: 'Checking now',
   Error: 'Last check failed',
   Stopped: 'Paused',
@@ -26,6 +27,10 @@ export class CheckerCardComponent {
   checker = input.required<AdminChecker>();
   updated = output<AdminChecker>();
   unauthorized = output<void>();
+
+  readonly jobTypes: ScrapingJobType[] = ['CheckNext', 'Backfill'];
+  readonly typeText = JOB_TYPE_TEXT;
+  readonly typeHint = JOB_TYPE_HINT;
 
   readonly saving = signal(false);
   readonly feedback = signal('');
@@ -64,6 +69,33 @@ export class CheckerCardComponent {
 
     const lastKnownChapter = this.chapterForm.getRawValue().lastKnownChapter;
     this.save({ lastKnownChapter }, `Saved. The checker looks for chapter ${lastKnownChapter + 1} next.`);
+  }
+
+  runNow(type: ScrapingJobType): void {
+    this.saving.set(true);
+    this.feedback.set('');
+
+    this.api.requestRun(this.checker().id, type).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.feedbackIsError.set(false);
+        this.feedback.set(
+          `${JOB_TYPE_TEXT[type]} queued from chapter ${this.checker().lastKnownChapter + 1}. ` +
+            'The worker starts it within 30 seconds; follow it in the run history on the Scheduled jobs tab.'
+        );
+      },
+      error: (error: HttpErrorResponse) => {
+        this.saving.set(false);
+
+        if (error.status === 401 || error.status === 403) {
+          this.unauthorized.emit();
+          return;
+        }
+
+        this.feedbackIsError.set(true);
+        this.feedback.set(error.error?.errorMessage ?? 'The run was not requested. Try again.');
+      },
+    });
   }
 
   private save(request: UpdateCheckerRequestDto, successMessage: string): void {

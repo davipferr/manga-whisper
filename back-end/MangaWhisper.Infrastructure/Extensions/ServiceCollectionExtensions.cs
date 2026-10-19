@@ -82,6 +82,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMangaCheckerRepository, MangaCheckerRepository>();
         services.AddScoped<IChapterRepository, ChapterRepository>();
         services.AddScoped<IMangaRepository, MangaRepository>();
+        services.AddScoped<IScrapingJobRepository, ScrapingJobRepository>();
+        services.AddScoped<IJobRunRepository, JobRunRepository>();
+        services.AddScoped<IWorkerHeartbeatRepository, WorkerHeartbeatRepository>();
 
         return services;
     }
