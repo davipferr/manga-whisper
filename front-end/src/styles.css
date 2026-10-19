@@ -2,7 +2,8 @@
  * Manga Whisper design tokens.
  * The look borrows from printed manga: newsprint paper, black ink panels,
  * screentone dots and the dashed balloon manga uses for whispered lines.
- * Bootstrap stays for the grid and utilities; its variables are re-pointed here.
+ * Only Bootstrap Reboot (the base reset) is loaded, see angular.json; its variables are re-pointed here.
+ * The full Bootstrap was ~230 kB of unused component CSS: the app styles everything with its own mw-* classes.
  */
 :root {
   --mw-paper: #edeee9;
@@ -80,6 +81,20 @@ h3 { font-size: 1.25rem; }
 }
 
 .mw-muted { color: var(--mw-text-muted); }
+
+/* Hidden from the screen, still read by screen readers (same rule as Bootstrap's utility) */
+.visually-hidden {
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.visually-hidden:not(caption) { position: absolute !important; }
 
 /* Buttons */
 .mw-btn {
