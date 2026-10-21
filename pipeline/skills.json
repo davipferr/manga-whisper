@@ -1,0 +1,63 @@
+{
+  "$comment": "Skills externas (do skills.sh / GitHub) que o pipeline usa. `npm --prefix pipeline run setup` instala tudo isto + as skills locais de pipeline/skills/ para cada agente em `agents`, na raiz do repositório.",
+  "agents": [
+    "claude-code",
+    "codex"
+  ],
+  "external": [
+    {
+      "source": "mattpocock/skills",
+      "skills": [
+        "grilling",
+        "tdd",
+        "codebase-design"
+      ],
+      "why": "grilling: interrogatório da ideia. tdd: implementação em fatias vermelho→verde. codebase-design: vocabulário que o tdd consulta."
+    },
+    {
+      "source": "vercel-labs/skills",
+      "skills": [
+        "find-skills"
+      ],
+      "why": "find-skills: a skill onboard a usa para achar no skills.sh as skills que servem para a stack de cada projeto."
+    },
+    {
+      "source": "angular/skills",
+      "skills": [
+        "angular-developer"
+      ],
+      "why": "angular-developer: código Angular e boas práticas (oficial)."
+    },
+    {
+      "source": "dotnet/skills",
+      "skills": [
+        "dotnet-webapi",
+        "optimizing-ef-core-queries",
+        "run-tests"
+      ],
+      "why": "dotnet-webapi: endpoints ASP.NET Core. optimizing-ef-core-queries: revisar queries e repositórios EF Core. run-tests: o comando dotnet test certo (oficiais)."
+    },
+    {
+      "source": "anthropics/skills",
+      "skills": [
+        "frontend-design"
+      ],
+      "why": "frontend-design: dar às telas um visual próprio."
+    },
+    {
+      "source": "github/awesome-copilot",
+      "skills": [
+        "postgresql-optimization",
+        "csharp-xunit"
+      ],
+      "why": "postgresql-optimization: esquema e SQL do PostgreSQL. csharp-xunit: testes xUnit (o projeto ainda não tem testes)."
+    },
+    {
+      "source": "vercel-labs/agent-skills",
+      "skills": [
+        "web-design-guidelines"
+      ],
+      "why": "web-design-guidelines: revisar UI/UX e acessibilidade."
+    }
+  ]
+}

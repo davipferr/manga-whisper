@@ -157,3 +157,8 @@ Thumbs.db
 /back-end/**/*.pidb
 /back-end/**/*.svclog
 /back-end/**/*.scc
+
+# Pipeline de skills: reproduzíveis com `npm --prefix pipeline install` e `run setup`
+.claude/skills/
+.agents/skills/
+pipeline/node_modules/
